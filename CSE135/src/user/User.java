@@ -106,7 +106,7 @@ public class User {
 			rs = stmt
 					.executeQuery("SELECT name,role,age,state FROM public.\"Users\" WHERE name = '"
 							+ name + "'");
-
+			
 			while (rs.next()) {
 				return new User(rs.getString("name"), rs.getInt("age"),
 						rs.getString("state"), rs.getString("role"));

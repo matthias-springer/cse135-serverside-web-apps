@@ -12,9 +12,6 @@ import javax.servlet.http.HttpSession;
 
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
-/**
- * Servlet implementation class LoginHandler
- */
 @WebServlet("/LoginHandler")
 public class LoginHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -23,9 +20,6 @@ public class LoginHandler extends HttpServlet {
         super();
     }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (User.exists(request.getParameter("name"))) {
 			HttpSession session = request.getSession();
