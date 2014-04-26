@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Signup Handler</title>
 </head>
 <body>
 	<%
@@ -13,9 +13,9 @@
 				request.getParameter("state"), request.getParameter("role"))
 				.save()) {
 	%>
-		<p>User Signup successful!</p>
+		<p>You have successfully signed up.</p>
 	<% } else { %>
-		<p>User Signup failed! The user does already exist!</p>
+		<p>Your signup failed.</p>
 	<% } %>
 </body>
 </html>

@@ -1,0 +1,184 @@
+-- run with "psql -U postgres -f filename"
+
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+DROP DATABASE "CSE135DB";
+--
+-- Name: CSE135DB; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE "CSE135DB" WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252';
+
+CREATE USER cse135user WITH PASSWORD 'password';
+
+ALTER DATABASE "CSE135DB" OWNER TO cse135user;
+
+\connect "CSE135DB"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: CSE135DB; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE "CSE135DB" IS 'Database for a Shopping Website application for CSE135 class on Online Analytics (Spring 2014 at UCSD).';
+
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: ProductCategories; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE "ProductCategories" (
+    name character varying(100) NOT NULL,
+    description character varying(500),
+    ownername character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public."ProductCategories" OWNER TO postgres;
+
+--
+-- Name: Products; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE "Products" (
+    name character varying(50) NOT NULL,
+    sku character(10) NOT NULL,
+    categoryname character varying(100) NOT NULL,
+    price integer NOT NULL
+);
+
+
+ALTER TABLE public."Products" OWNER TO postgres;
+
+--
+-- Name: Users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE "Users" (
+    name character varying(50) NOT NULL,
+    role character(1) NOT NULL,
+    age integer,
+    state character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public."Users" OWNER TO postgres;
+
+--
+-- Name: ProductCategories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY "ProductCategories"
+    ADD CONSTRAINT "ProductCategories_pkey" PRIMARY KEY (name);
+
+
+--
+-- Name: Products_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY "Products"
+    ADD CONSTRAINT "Products_pkey" PRIMARY KEY (sku);
+
+
+--
+-- Name: Users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY "Users"
+    ADD CONSTRAINT "Users_pkey" PRIMARY KEY (name);
+
+
+--
+-- Name: Categories_ProductCategories; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX "Categories_ProductCategories" ON "Products" USING btree (categoryname);
+
+
+--
+-- Name: ProductCategories_Users; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX "ProductCategories_Users" ON "ProductCategories" USING btree (ownername);
+
+
+--
+-- Name: ProductCategories_ownername_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "ProductCategories"
+    ADD CONSTRAINT "ProductCategories_ownername_fkey" FOREIGN KEY (ownername) REFERENCES "Users"(name);
+
+
+--
+-- Name: Products_categoryname_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "Products"
+    ADD CONSTRAINT "Products_categoryname_fkey" FOREIGN KEY (categoryname) REFERENCES "ProductCategories"(name);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
