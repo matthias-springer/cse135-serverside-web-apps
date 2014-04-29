@@ -6,10 +6,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 </head>
+<jsp:include page="header.jsp"></jsp:include>
 <body>
 	<h1>List of Categories</h1>
 	
-	<table>
+	<table class="table table-striped">
 		<tr>
 			<td><b>ID</b></td><td><b>Name</b></td><td><b>Description</b></td><td></td>
 		</tr>
@@ -27,7 +28,13 @@
 					<td><input type="hidden" name="ID" value="<%= cat.getID() %>" /><%= cat.getID() %></td>
 					<td><input type="text" name="name" value="<%= cat.getName() %>" /></td>
 					<td><input type="text" name="description" value="<%= cat.getDescription() %>" /></td>
-					<td><input type="submit" name="type" value="Update" /><input type="submit" name="type" value="Delete" /></td>
+					<td><input type="submit" name="type" value="Update" />
+					<% if (!cat.hasProducts()) { %>
+						<input type="submit" name="type" value="Delete" />
+					<% } else { %>
+						<input disabled="disabled" type="submit" name="type" value="Delete" />
+					<% } %>
+					</td>
 				</tr>
 			</form>
 		<% } %>
