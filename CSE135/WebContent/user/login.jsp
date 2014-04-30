@@ -13,15 +13,12 @@ function checkAllInputProvided(evt) {
 }
 </script>
 </head>
+<jsp:include page="../header.jsp"></jsp:include>
 <body>
 	<h1>User Login</h1>
-	
-	<% if (request.getParameter("error") != null) { %>
-		<p>The provided name <%= request.getParameter("name") %> is not known.</p>
-	<% } %>
-	
+		
 	<form action="handle_login" method="post">
-		<table>
+		<table class="table">
 			<tr>
 				<td>Name</td>
 				<td><input type="text" value="<%= request.getParameter("name") == null ? "" : request.getParameter("name") %>" name="name" id="name" onmouseup="checkAllInputProvided(event);" onmouseout="checkAllInputProvided(event);" onclick="checkAllInputProvided(event);" onchange="checkAllInputProvided(event);" onkeyup="checkAllInputProvided(event);" /></td>
@@ -29,6 +26,9 @@ function checkAllInputProvided(evt) {
 		</table>
 		<p>
 			<input type="submit" value="submit" id="submit" name="submit" disabled="disabled" />
+		</p>
+		<p>
+			Don't have an account? <a href="signup.jsp">Signup here!</a></p>
 		</p>
 	</form>
 </body>

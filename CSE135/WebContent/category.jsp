@@ -8,6 +8,11 @@
 </head>
 <jsp:include page="header.jsp"></jsp:include>
 <body>
+	<% if (request.getSession().getAttribute("username") == null) { %>
+		<p>You must be logged in to see this page!</p>
+	<% return;
+	} %>
+	
 	<h1>List of Categories</h1>
 	
 	<table class="table table-striped">

@@ -6,11 +6,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
 </head>
+
 <body>
 	<%
 		session.removeAttribute("username");
 		session.invalidate();
 	%>
+<jsp:include page="../header.jsp"></jsp:include> 
 	<h2>You have been logged out successfully.</h2>
 </body>
 </html>

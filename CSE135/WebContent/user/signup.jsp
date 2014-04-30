@@ -23,10 +23,11 @@ function checkAllInputProvided(evt) {
 }
 </script>
 </head>
+<jsp:include page="../header.jsp"></jsp:include>
 <body>
 	<h1>User Signup</h1>
 	<form action="handle_signup.jsp" method="post">
-		<table>
+		<table class="table table-striped">
 			<tr>
 				<td>Name</td>
 				<td><input type="text" name="name" id="name" onmouseup="checkAllInputProvided(event);" onmouseout="checkAllInputProvided(event);" onclick="checkAllInputProvided(event);" onchange="checkAllInputProvided(event);" onkeyup="checkAllInputProvided(event);" /></td>

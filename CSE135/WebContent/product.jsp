@@ -8,6 +8,11 @@
 </head>
 <jsp:include page="header.jsp"></jsp:include>
 <body>
+	<% if (request.getSession().getAttribute("username") == null) { %>
+		<p>You must be logged in to see this page!</p>
+	<% return;
+	} %>
+	
 	<h1>List of Products</h1>
 
 	<div id="categories"
@@ -24,14 +29,14 @@
 			<tr>
 				<td><a
 					href="product.jsp?cat=<%=cat.getID()%>&keyword=<%=request.getParameter("keyword") == null ? ""
-						: request.getParameter("keyword")%>"><%=cat.getName()%></a>
+						: request.getParameter("keyword")%>&pagetype=<%= request.getParameter("pagetype") %>"><%=cat.getName()%></a>
 				</td>
 			</tr>
 			<% } %>
 			<tr>
 				<td><a
 					href="product.jsp?cat=-1&keyword=<%=request.getParameter("keyword") == null ? "" : request
-					.getParameter("keyword")%>">(all
+					.getParameter("keyword")%>&pagetype=<%= request.getParameter("pagetype") %>">(all
 						categories)</a></td>
 			</tr>
 		</table>
@@ -50,6 +55,7 @@
 				<input type="hidden" name="category"
 					value="<%=request.getParameter("cat") == null ? "-1" : request
 					.getParameter("cat")%>" />
+				<input type="hidden" name="pagetype" value="<%= request.getParameter("pagetype") %>" />
 				<input type="submit" name="submit_filter" />
 			</p>
 		</form>
@@ -63,26 +69,37 @@
 				<td><b>Price</b></td>
 				<td></td>
 			</tr>
+			<%
+				if (request.getParameter("pagetype").equals("admin")) {
+			%>
 			<form action="handle_product" method="post">
 				<tr>
-					<td><input type="hidden" name="ID" value="-1" />(auto)</td>
+					<td><input type="hidden" name="ID" value="-1" /> <input
+						type="hidden" name="pagetype"
+						value="<%=request.getParameter("pagetype")%>" />(auto)</td>
 					<td><input type="text" name="name" /></td>
 					<td><input type="text" name="SKU" /></td>
 					<td><select name="category">
-							<% for (Category cat : Category.getAllCategories()) { %>
-							<option value="<%= cat.getID() %>"><%= cat.getName() %></option>
-							<% } %>
+							<%
+								for (Category cat : Category.getAllCategories()) {
+							%>
+							<option value="<%=cat.getID()%>"><%=cat.getName()%></option>
+							<%
+								}
+							%>
 					</select></td>
 					<td><input type="text" name="price" /></td>
 					<td><input type="submit" name="type" value="Insert" /></td>
 				</tr>
 			</form>
+			<% } %>
 			<%
 				for (product.Product pr : product.Product.getAllProducts(request.getParameter("cat") == null ? -1 : Integer.parseInt(request.getParameter("cat")), request.getParameter("keyword") == null ? "" : request.getParameter("keyword"))) {
 			%>
 			<form action="handle_product" method="post">
 				<tr>
-					<td><input type="hidden" name="ID" value="<%=pr.getID()%>" /><%=pr.getID()%></td>
+					<td><input type="hidden" name="ID" value="<%=pr.getID()%>" /><%=pr.getID()%>
+						<input type="hidden" name="pagetype" value="<%= request.getParameter("pagetype") %>" /></td>
 					<td><input type="text" name="name" value="<%=pr.getName()%>" /></td>
 					<td><input type="text" name="SKU" value="<%=pr.getSKU()%>" /></td>
 					<td><select name="category">
@@ -95,8 +112,14 @@
 							<% } %>
 					</select></td>
 					<td><input type="text" name="price" value="<%=pr.getPrice()%>" /></td>
-					<td><input type="submit" name="type" value="Update" /><input
-						type="submit" name="type" value="Delete" /></td>
+					<td>
+						<% if (request.getParameter("pagetype").equals("admin")) { %>
+							<input type="submit" name="type" value="Update" />
+							<input type="submit" name="type" value="Delete" />
+						<% } else if (request.getParameter("pagetype").equals("browsing")) { %>
+							<input type="submit" name="type" value="Order" />
+						<% } %>
+					</td>
 				</tr>
 			</form>
 			<% } %>

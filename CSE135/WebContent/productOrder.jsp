@@ -8,7 +8,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Product Order</title>
 </head>
+<jsp:include page="header.jsp"></jsp:include>
 <body>
+	<% if (request.getSession().getAttribute("username") == null) { %>
+		<p>You must be logged in to see this page!</p>
+	<% return;
+	} %>
+	
 <form action="handle_productOrder" method="post">
 <table>
 <tr>

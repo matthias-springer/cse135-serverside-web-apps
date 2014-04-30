@@ -53,6 +53,11 @@ public class ProductHandler extends HttpServlet {
 					error = "Insertion of product (" + name + ") failed!";
 				}
 			}
+			else if (request.getParameter("type").equals("Order")) {
+				// TODO: go to order page
+				
+				return;
+			}
 		} catch (Exception e) {
 			error = "Failed to insert/update/delete tuple!";
 		} finally {
@@ -62,7 +67,8 @@ public class ProductHandler extends HttpServlet {
 					+ "&keyword="
 					+ (request.getParameter("keyword") == null ? "" : request
 							.getParameter("keyword"))
-					+ (error == null ? "" : "&error=" + error));
+					+ (error == null ? "" : "&error=" + error)
+					+ "&type=" + request.getParameter("pagetype"));
 		}
 	}
 
