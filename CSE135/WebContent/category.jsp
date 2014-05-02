@@ -23,7 +23,7 @@
 			<tr>
 				<td><input type="hidden" name="ID" value="-1" />(auto)</td>
 				<td><input type="text" name="name" /></td>
-				<td><input type="text" name="description" /></td>
+				<td><textarea name="description"></textarea></td>
 				<td><input type="submit" name="type" value="Insert" /></td>
 			</tr>
 		</form>
@@ -32,7 +32,7 @@
 				<tr>
 					<td><input type="hidden" name="ID" value="<%= cat.getID() %>" /><%= cat.getID() %></td>
 					<td><input type="text" name="name" value="<%= cat.getName() %>" /></td>
-					<td><input type="text" name="description" value="<%= cat.getDescription() %>" /></td>
+					<td><textarea name="description" ><%= cat.getDescription() %></textarea></td>
 					<td><input type="submit" name="type" value="Update" />
 					<% if (!cat.hasProducts()) { %>
 						<input type="submit" name="type" value="Delete" />

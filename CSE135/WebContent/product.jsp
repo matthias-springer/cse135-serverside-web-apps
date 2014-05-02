@@ -20,7 +20,7 @@
 
 		<table class="table table-striped">
 			<tr>
-				<td>Categories</td>
+				<td><b>Categories</b></td>
 			</tr>
 
 			<%
@@ -36,8 +36,8 @@
 			<tr>
 				<td><a
 					href="product.jsp?cat=-1&keyword=<%=request.getParameter("keyword") == null ? "" : request
-					.getParameter("keyword")%>&pagetype=<%= request.getParameter("pagetype") %>">(all
-						categories)</a></td>
+					.getParameter("keyword")%>&pagetype=<%= request.getParameter("pagetype") %>"><i>All
+						Products</i></a></td>
 			</tr>
 		</table>
 
@@ -101,9 +101,9 @@
 				<tr>
 					<td><input type="hidden" name="ID" value="<%=pr.getID()%>" /><%=pr.getID()%>
 						<input type="hidden" name="pagetype" value="<%= request.getParameter("pagetype") %>" /></td>
-					<td><input type="text" name="name" value="<%=pr.getName()%>" /></td>
-					<td><input type="text" name="SKU" value="<%=pr.getSKU()%>" /></td>
-					<td><select name="category">
+					<td><input <%= !isAdmin ? "readonly=\"readonly\"" : "" %> type="text" name="name" value="<%=pr.getName()%>" /></td>
+					<td><input <%= !isAdmin ? "readonly=\"readonly\"" : "" %> type="text" name="SKU" value="<%=pr.getSKU()%>" /></td>
+					<td><select <%= !isAdmin ? "readonly=\"readonly\"" : "" %> name="category">
 							<% for (Category cat : Category.getAllCategories()) { %>
 							<% if (pr.getCategory() == cat.getID()) { %>
 							<option selected="selected" value="<%= cat.getID() %>"><%= cat.getName() %></option>
@@ -112,7 +112,7 @@
 							<% } %>
 							<% } %>
 					</select></td>
-					<td><input type="text" name="price" value="<%=pr.getPrice()%>" /></td>
+					<td><input <%= !isAdmin ? "readonly=\"readonly\"" : "" %> type="text" name="price" value="<%=pr.getPrice()%>" /></td>
 					<td>
 						<% if (isAdmin) { %>
 							<input type="submit" name="type" value="Update" />

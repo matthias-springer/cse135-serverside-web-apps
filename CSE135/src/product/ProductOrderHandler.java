@@ -37,7 +37,7 @@ public class ProductOrderHandler extends HttpServlet {
 				}
 				
 				session.setAttribute("cart", cart);
-				response.sendRedirect("productOrder.jsp?pageType=0");
+				response.sendRedirect("product.jsp?pagetype=browsing");
 			}
 			catch(Exception e)
 			{ 

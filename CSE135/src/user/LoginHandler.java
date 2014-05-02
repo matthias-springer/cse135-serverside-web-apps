@@ -25,7 +25,10 @@ public class LoginHandler extends HttpServlet {
 			HttpSession session = request.getSession();
 			session.setAttribute("username", request.getParameter("name"));
 			
-			response.sendRedirect("../category.jsp");
+			if (user.User.findUserByName((String) request.getSession().getAttribute("username")).isOwner())
+				response.sendRedirect("../product.jsp?pagetype=admin");
+			else 
+				response.sendRedirect("../product.jsp?pagetype=browsing");
 		}
 		else {
 			response.sendRedirect("login.jsp?error=The provided name " + request.getParameter("name") + " is not known.&name=" + request.getParameter("name"));
