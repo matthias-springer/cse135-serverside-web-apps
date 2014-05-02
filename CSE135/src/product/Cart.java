@@ -74,8 +74,10 @@ public class Cart {
 			statement.setString(1, (String)session.getAttribute("username"));
 			statement.setString(2, (String)session.getId());
 			//******************************************USED JODA TIME LIBRARY FOR DATE/TIME FUNCTIONS*********************
-			DateTime d = new DateTime();
-			statement.setDate(3, new java.sql.Date(d.getMillis()));
+			//DateTime d = new DateTime();
+			//new Date().get
+			statement.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
+			//statement.setDate(3, new java.sql.Date(d.getMillis()));
 			//*************************************************************************************************************
 			statement.execute();
 			
@@ -99,7 +101,7 @@ public class Cart {
 			// Close the Connection
 			// conn.close();
 			return true;
-
+			
 		} catch (SQLException e) {
 			System.out.println(e);
 			return false;
