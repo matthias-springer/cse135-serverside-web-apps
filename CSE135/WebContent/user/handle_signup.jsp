@@ -6,6 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Signup Handler</title>
 </head>
+<jsp:include page="../header.jsp"></jsp:include>
 <body>
 	<%
 		if (new user.User(request.getParameter("name"),
@@ -13,9 +14,12 @@
 				request.getParameter("state"), request.getParameter("role"))
 				.save()) {
 	%>
-		<p>You have successfully signed up.</p>
+		<h2>You have successfully signed up.</h2>
+		<p><a href="login.jsp">Back to Login page</a></p>
 	<% } else { %>
-		<p>Your signup failed.</p>
+		<h2>Your signup failed.</h2>
+		<p><a href="signup.jsp">Back to Signup page</a></p>
 	<% } %>
+
 </body>
 </html>
