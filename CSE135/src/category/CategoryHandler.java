@@ -1,6 +1,7 @@
 package category;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,7 +23,12 @@ public class CategoryHandler extends HttpServlet {
 			return;
 		}
 		String error = null;
-
+		String confirmation = null;
+		
+		boolean isAdmin = user.User.findUserByName(
+				(String) request.getSession().getAttribute("username"))
+				.isOwner();
+		
 		try {
 			Integer ID = Integer.parseInt(request.getParameter("ID"));
 			String name = request.getParameter("name");
@@ -33,27 +39,36 @@ public class CategoryHandler extends HttpServlet {
 				cat.setName(name);
 				cat.setDescription(description);
 
-				if (!cat.save()) {
+				if (!isAdmin || !cat.save()) {
 					error = "Update of category " + ID + " (" + name
 							+ ") failed!";
 				}
+				else {
+					confirmation = "Updated category " + name + " with description '" + description + "' successfully!";
+				}
 			} else if (request.getParameter("type").equals("Delete")) {
-				if (!Category.findCategoryByID(ID).delete()) {
+				if (!isAdmin || !Category.findCategoryByID(ID).delete()) {
 					error = "Deletion of category " + ID + " (" + name
 							+ ") failed!";
+				}
+				else {
+					confirmation = "Deleted category " + name + " with description '" + description + "' successfully!";
 				}
 			} else if (request.getParameter("type").equals("Insert")) {
 				Category cat = new Category(name, description);
 
-				if (!cat.save()) {
+				if (!isAdmin || !cat.save()) {
 					error = "Insertion of (" + name + ") failed!";
+				}
+				else {
+					confirmation = "Inserted category " + name + " with description '" + description + "' successfully!";
 				}
 			}
 		} catch (Exception e) {
 			error = "Failed to insert/update/delete tuple!";
 		} finally {
 			if (error == null) {
-				response.sendRedirect("category.jsp");
+				response.sendRedirect("category.jsp" + (confirmation == null ? "" : "?confirmation=" + confirmation));
 			} else {
 				response.sendRedirect("category.jsp?error=" + error);
 			}

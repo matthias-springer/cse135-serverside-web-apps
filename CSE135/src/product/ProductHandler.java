@@ -27,6 +27,9 @@ public class ProductHandler extends HttpServlet {
 
 		String error = null;
 		String confirmation = null;
+		boolean isAdmin = user.User.findUserByName(
+				(String) request.getSession().getAttribute("username"))
+				.isOwner();
 
 		try {
 			Integer ID = Integer.parseInt(request.getParameter("ID"));
@@ -43,7 +46,7 @@ public class ProductHandler extends HttpServlet {
 				pr.setCategory(category);
 				pr.setPrice(price);
 
-				if (!pr.save()) {
+				if (!isAdmin || !pr.save()) {
 					error = "Update of product " + ID + " (" + name
 							+ ") failed!";
 				} else {
@@ -54,14 +57,17 @@ public class ProductHandler extends HttpServlet {
 							+ "!";
 				}
 			} else if (request.getParameter("type").equals("Delete")) {
-				if (!Product.findProductByID(ID).delete()) {
+				if (!isAdmin || !Product.findProductByID(ID).delete()) {
 					error = "Deletion of product " + ID + " (" + name
 							+ ") failed!";
+				} else {
+					confirmation = "Deletion of product " + ID + " (" + name
+							+ ") was successful!";
 				}
 			} else if (request.getParameter("type").equals("Insert")) {
 				Product pr = new Product(name, SKU, category, price);
 
-				if (!pr.save()) {
+				if (!isAdmin || !pr.save()) {
 					error = "Insertion of product (" + name + ") failed!";
 				} else {
 					confirmation = "Inserted a new product " + name
