@@ -100,11 +100,11 @@ public class Product {
 
 			if (category != -1) {
 				rs = stmt
-						.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE category=" + category + " AND name LIKE '%" + keyword + "%' ORDER BY \"ID\"");
+						.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE category=" + category + " AND UPPER(name) LIKE '%" + keyword.toUpperCase() + "%' ORDER BY \"ID\"");
 			}
 			else {
 				rs = stmt
-						.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE name LIKE '%" + keyword + "%' ORDER BY \"ID\"");			
+						.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE UPPER(name) LIKE '%" + keyword.toUpperCase() + "%' ORDER BY \"ID\"");			
 			}
 			
 			while (rs.next()) {
