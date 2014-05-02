@@ -14,11 +14,12 @@
 		<td>ItemSKU</td>
 	</tr>
 	<% 
-	for(String s : Product.getAllProduct())
+	for(Product p : Product.getAllProduct())
 	{%>
 	<form action="productOrder.jsp" method="post">
 	<tr>
-		<td><input type="text" name="SKU" value="<%=s %>" /></td>
+		<td><input type="text" readonly name="SKU" value="<%=p.getSKU() %>" /></td>
+		<td><input type="text" readonly name="Price" value="<%=p.getPrice().toString() %>" /></td>
 		<td><input type="submit" name="type" value="Order" /></td>
 	</tr>
 	</form>

@@ -24,10 +24,15 @@ public class ProductOrderHandler extends HttpServlet {
 			HttpSession session = request.getSession();
 			
 			try{
+				if(request.getParameter("type").equals("Add"))
+					Cart.addToCart(request.getParameter("latestSKU"), Integer.parseInt(request.getParameter("latestQuantity")));
+				if(request.getParameter("type").equals("Delete"))
+					Cart.removeFromCart(request.getParameter("SKU"));
+				if(request.getParameter("type").equals("Update"))
+					Cart.updateCart(request.getParameter("SKU"), Integer.parseInt(request.getParameter("Quantity")));
 				
-				Cart.addToCart(request.getParameter("latestSKU"), Integer.parseInt(request.getParameter("latestQuantity")));
 				session.setAttribute("cart", Cart.getCart());
-				response.sendRedirect("productsBrowsing.jsp");
+				response.sendRedirect("productOrder.jsp");
 			}
 			catch(Exception e)
 			{ 

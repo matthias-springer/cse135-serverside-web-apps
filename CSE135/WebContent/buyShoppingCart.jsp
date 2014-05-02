@@ -6,9 +6,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Product Order</title>
+<title>Buy shopping Cart</title>
 </head>
 <body>
+<form action="handle_finalOrder" method="post">
 <table>
 <tr>
 	<td>Item SKU</td>
@@ -23,21 +24,13 @@
 		for(String prodSKU : Cart.getCart().keySet())
 		{
 			%>
-			<form action="handle_productOrder" method="post">
 			<tr>
 					<td><input type="text" readonly name="SKU" value="<%= prodSKU %>" /></td>
-					<td><input type="text" name="Quantity" value="<%= Cart.getCart().get(prodSKU) %>" /></td>
-					<td><input type="submit" name="type" value="Update" /><input type="submit" name="type" value="Delete" /></td>
-			</tr>
-			</form>
+					<td><input type="text" readonly name="Quantity" value="<%= Cart.getCart().get(prodSKU) %>" /></td>
+				</tr>
 		<% } %>
-	<form action="handle_productOrder" method="post">
-<tr><td><input type="text" name="latestSKU" value="<%= request.getParameter("SKU")==null?"":request.getParameter("SKU") %>" /></td>
-<td><input type="text" name="latestQuantity" /></td>
-<td><input type="submit" name="type" value="Add" /></td>
-</form>
 </table>
-<a href="productsBrowsing.jsp">Shop more!</a>
-<a href="buyShoppingCart.jsp" style="float:right">Proceed to checkout</a>
+<input type="submit" name="type" value="Buy!"/>
+</form>
 </body>
 </html>
