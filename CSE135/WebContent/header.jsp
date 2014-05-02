@@ -12,16 +12,29 @@
 	<h2>
 		Hello
 		<%=request.getSession().getAttribute("username")%></h2>
+	<% if (user.User.findUserByName((String) request.getSession().getAttribute("username")).isOwner()) { %>
+		<p><i>You're logged in as an owner!</i><p>
+	<% } else { %>
+		<p><i>You're logged in as a user!</i></p>
+	<% } %>
+	
+	<% if (user.User.findUserByName((String) request.getSession().getAttribute("username")).isOwner()) { %>
 	<p>
 		<a style="float: right;" href="product.jsp?pagetype=admin">Products</a>
 	</p>
+	<p>
+		<a style="float: right; margin-right: 10px;" href="category.jsp">Categories</a>
+	</p>
+	<% } else {%>
 	<p>
 		<a style="float: right; margin-right: 10px;"
 			href="product.jsp?pagetype=browsing">Products Browsing</a>
 	</p>
 	<p>
-		<a style="float: right; margin-right: 10px;" href="category.jsp">Categories</a>
+		<a style="float: right; margin-right: 10px;" href="productOrder.jsp">Shopping Cart</a>
 	</p>
+	<% } %>
+	
 	<p>
 		<a style="float: right; margin-right: 10px;" href="user/logout.jsp">Logout</a>
 	</p>

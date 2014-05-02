@@ -70,7 +70,8 @@
 				<td></td>
 			</tr>
 			<%
-				if (request.getParameter("pagetype").equals("admin")) {
+				boolean isAdmin = request.getParameter("pagetype").equals("admin") && user.User.findUserByName((String) request.getSession().getAttribute("username")).isOwner();
+				if (isAdmin) {
 			%>
 			<form action="handle_product" method="post">
 				<tr>
@@ -113,7 +114,7 @@
 					</select></td>
 					<td><input type="text" name="price" value="<%=pr.getPrice()%>" /></td>
 					<td>
-						<% if (request.getParameter("pagetype").equals("admin")) { %>
+						<% if (isAdmin) { %>
 							<input type="submit" name="type" value="Update" />
 							<input type="submit" name="type" value="Delete" />
 						<% } else if (request.getParameter("pagetype").equals("browsing")) { %>

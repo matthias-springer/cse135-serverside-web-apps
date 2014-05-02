@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-
 @WebServlet("/ProductOrderHandler")
 public class ProductOrderHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -24,19 +22,27 @@ public class ProductOrderHandler extends HttpServlet {
 			HttpSession session = request.getSession();
 			
 			try{
+				Cart cart = request.getSession().getAttribute("cart") == null ?
+						new Cart() : (Cart) request.getSession().getAttribute("cart");
 				if(request.getParameter("type").equals("Add"))
-					Cart.addToCart(request.getParameter("latestSKU"), Integer.parseInt(request.getParameter("latestQuantity")));
-				if(request.getParameter("type").equals("Delete"))
-					Cart.removeFromCart(request.getParameter("SKU"));
-				if(request.getParameter("type").equals("Update"))
-					Cart.updateCart(request.getParameter("SKU"), Integer.parseInt(request.getParameter("Quantity")));
+					cart.addToCart(Integer.parseInt(request.getParameter("ID")), Integer.parseInt(request.getParameter("quantity")));
+				else if(request.getParameter("type").equals("Delete"))
+					cart.removeFromCart(Integer.parseInt(request.getParameter("ID")));
+				else if(request.getParameter("type").equals("Update"))
+					cart.updateCart(Integer.parseInt(request.getParameter("ID")), Integer.parseInt(request.getParameter("quantity")));
+				else if (request.getParameter("type").equals("Purchase")) {
+					cart.save((String) session.getAttribute("username"), session.getId());
+					response.sendRedirect("productOrder.jsp?pageType=2");
+					return;
+				}
 				
-				session.setAttribute("cart", Cart.getCart());
-				response.sendRedirect("productOrder.jsp");
+				session.setAttribute("cart", cart);
+				response.sendRedirect("productOrder.jsp?pageType=0");
 			}
 			catch(Exception e)
 			{ 
-				response.sendRedirect("productsBrowsing.jsp?error=1&name=" + request.getParameter("latestSKU"));
+				e.printStackTrace();
+				//response.sendRedirect("productsBrowsing.jsp?error=1&name=" + request.getParameter("ID"));
 			}
 	
 	}

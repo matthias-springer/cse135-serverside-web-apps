@@ -6,57 +6,56 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.text.SimpleDateFormat;
-import java.sql.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
-
-import org.apache.catalina.util.SessionIdGenerator;
-import org.joda.time.DateTime;
 
 import connection.ConnectToDB;
 
 public class Cart {
-	
-	private static HashMap<String,Integer> cart;
-	
-	public static HashMap<String,Integer> addToCart(String SKU, int quantity)
-	{
-		if(cart.containsKey(SKU))
-			cart.put(SKU,cart.get(SKU)+quantity);
-		else
-			cart.put(SKU,quantity);
+
+	private Map<Integer, Integer> cart = new HashMap<Integer, Integer>();
+
+	public Map<Integer, Integer> getCart() {
 		return cart;
 	}
 	
-	public static HashMap<String,Integer> removeFromCart(String SKU)
-	{
-		if(cart.containsKey(SKU))
-		cart.remove(SKU);
-		return cart;
-	}
-	
-	public static HashMap<String,Integer> updateCart(String SKU, int quantity)
-	{
-		if(cart.containsKey(SKU))
-		cart.put(SKU,quantity);
-		return cart;
-	}
-	
-	public static HashMap<String,Integer> getCart() {
-		if(cart==null)
-			cart = new HashMap<String,Integer>();
-		return cart;
-	}
-	
-	public static void setCart(HashMap<String,Integer> cartFromSession) {
-		if(cartFromSession!=null)
-		cart = cartFromSession;
-	}
-	
-	public static boolean save(HttpSession session) {
-		//Use sessionID as the orderID
+	public Integer getTotal() {
+		int total = 0;
 		
+		for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
+			total += entry.getValue() * Product.findProductByID(entry.getKey()).getPrice();
+		}
+		
+		return total;
+	}
+	
+	public void addToCart(Integer ID,
+			Integer quantity) {
+		if (cart.containsKey(ID))
+			cart.put(ID, cart.get(ID) + quantity);
+		else
+			cart.put(ID, quantity);
+	}
+
+	public void removeFromCart(Integer ID) {
+		if (cart.containsKey(ID))
+			cart.remove(ID);
+	}
+
+	public void updateCart(Integer ID, Integer quantity) {
+		if (quantity == 0) {
+			removeFromCart(ID);
+			return;
+		}
+		
+		if (cart.containsKey(ID))
+			cart.put(ID, quantity);
+	}
+
+	public boolean save(String username, String sessionId) {
+		// Use sessionID as the orderID
+
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -70,26 +69,29 @@ public class Cart {
 			conn = DriverManager.getConnection(connectionString);
 			conn.setAutoCommit(false);
 			// Create the statement
-			PreparedStatement statement = conn.prepareStatement("INSERT INTO public.\"UserOrders\"(\"Username\",\"OrderID\",\"OrderDate\") VALUES(?,?,?);");
-			statement.setString(1, (String)session.getAttribute("username"));
-			statement.setString(2, (String)session.getId());
-			//******************************************USED JODA TIME LIBRARY FOR DATE/TIME FUNCTIONS*********************
-			//DateTime d = new DateTime();
-			//new Date().get
-			statement.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
-			//statement.setDate(3, new java.sql.Date(d.getMillis()));
-			//*************************************************************************************************************
+			PreparedStatement statement = conn
+					.prepareStatement("INSERT INTO public.\"UserOrders\"(\"Username\",\"OrderID\",\"OrderDate\") VALUES(?,?,?);");
+			statement.setString(1, username);
+			statement.setString(2, sessionId);
+			// ******************************************USED JODA TIME LIBRARY
+			// FOR DATE/TIME FUNCTIONS*********************
+			// DateTime d = new DateTime();
+			// new Date().get
+			statement.setTimestamp(3, new java.sql.Timestamp(
+					new java.util.Date().getTime()));
+			// statement.setDate(3, new java.sql.Date(d.getMillis()));
+			// *************************************************************************************************************
 			statement.execute();
-			
-			PreparedStatement statement1 = conn.prepareStatement("INSERT INTO public.\"OrderDetails\"(\"OrderID\",\"SKU\",\"Quantity\") VALUES(?,?,?);");
-			statement1.setString(1, (String)session.getId());
-			for(String key : cart.keySet())
-			{
-				statement1.setString(2,key);
-				statement1.setInt(3,cart.get(key));
+
+			PreparedStatement statement1 = conn
+					.prepareStatement("INSERT INTO public.\"OrderDetails\"(\"OrderID\",\"ID\",\"Quantity\") VALUES(?,?,?);");
+			statement1.setString(1, sessionId);
+			for (Integer key : cart.keySet()) {
+				statement1.setInt(2, key);
+				statement1.setInt(3, cart.get(key));
 				statement1.execute();
 			}
-			
+
 			conn.commit();
 
 			// Close the ResultSet
@@ -101,7 +103,7 @@ public class Cart {
 			// Close the Connection
 			// conn.close();
 			return true;
-			
+
 		} catch (SQLException e) {
 			System.out.println(e);
 			return false;

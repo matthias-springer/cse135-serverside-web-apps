@@ -14,6 +14,10 @@ public class User {
 
 	private String role;
 
+	public boolean isOwner() {
+		return role.equals("O");
+	}
+	
 	public User(String name, int age, String state, String role) {
 		this.name = name;
 		this.age = age;

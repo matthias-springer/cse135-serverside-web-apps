@@ -24,10 +24,10 @@ public class ProductHandler extends HttpServlet {
 			response.sendRedirect("user/login.jsp");
 			return;
 		}
-		
+
 		String error = null;
 		String confirmation = null;
-		
+
 		try {
 			Integer ID = Integer.parseInt(request.getParameter("ID"));
 			String name = request.getParameter("name");
@@ -46,10 +46,12 @@ public class ProductHandler extends HttpServlet {
 				if (!pr.save()) {
 					error = "Update of product " + ID + " (" + name
 							+ ") failed!";
-				}
-				else {
-					confirmation = "Updated an existing proudct " + name + " with SKU " + SKU + " and price " + 
-							price + " and cateogory " + Category.findCategoryByID(category).getName() + "!";
+				} else {
+					confirmation = "Updated an existing proudct " + name
+							+ " with SKU " + SKU + " and price " + price
+							+ " and cateogory "
+							+ Category.findCategoryByID(category).getName()
+							+ "!";
 				}
 			} else if (request.getParameter("type").equals("Delete")) {
 				if (!Product.findProductByID(ID).delete()) {
@@ -61,30 +63,31 @@ public class ProductHandler extends HttpServlet {
 
 				if (!pr.save()) {
 					error = "Insertion of product (" + name + ") failed!";
+				} else {
+					confirmation = "Inserted a new product " + name
+							+ " with SKU " + SKU + " and price " + price
+							+ " and cateogory "
+							+ Category.findCategoryByID(category).getName()
+							+ "!";
 				}
-				else {
-					confirmation = "Inserted a new product " + name + " with SKU " + SKU + " and price " + 
-							price + " and cateogory " + Category.findCategoryByID(category).getName() + "!";
-				}
-			}
-			else if (request.getParameter("type").equals("Order")) {
-				// TODO: go to order page
-				
+			} else if (request.getParameter("type").equals("Order")) {
+				response.sendRedirect("productOrder.jsp?ID=" + ID);
 				return;
 			}
 		} catch (Exception e) {
 			error = "Failed to insert/update/delete tuple!";
-		} finally {
-			response.sendRedirect("product.jsp?cat="
-					+ (request.getParameter("cat") == null ? "-1" : request
-							.getParameter("cat"))
-					+ "&keyword="
-					+ (request.getParameter("keyword") == null ? "" : request
-							.getParameter("keyword"))
-					+ (error == null ? "" : "&error=" + error)
-					+ "&pagetype=" + request.getParameter("pagetype")
-					+ (confirmation == null ? "" : "&confirmation=" + confirmation));
 		}
+
+		response.sendRedirect("product.jsp?cat="
+				+ (request.getParameter("cat") == null ? "-1" : request
+						.getParameter("cat"))
+				+ "&keyword="
+				+ (request.getParameter("keyword") == null ? "" : request
+						.getParameter("keyword"))
+				+ (error == null ? "" : "&error=" + error) + "&pagetype="
+				+ request.getParameter("pagetype")
+				+ (confirmation == null ? "" : "&confirmation=" + confirmation));
+
 	}
 
 }

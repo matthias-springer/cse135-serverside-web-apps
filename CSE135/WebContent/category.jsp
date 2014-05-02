@@ -8,8 +8,8 @@
 </head>
 <jsp:include page="header.jsp"></jsp:include>
 <body>
-	<% if (request.getSession().getAttribute("username") == null) { %>
-		<p>You must be logged in to see this page!</p>
+	<% if (request.getSession().getAttribute("username") == null || !user.User.findUserByName((String) request.getSession().getAttribute("username")).isOwner()) { %>
+		<p>You must be logged in as an owner to see this page!</p>
 	<% return;
 	} %>
 	
