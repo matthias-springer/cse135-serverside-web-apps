@@ -17,6 +17,10 @@ public class CategoryHandler extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("username") == null) {
+			response.sendRedirect("user/login.jsp");
+			return;
+		}
 		String error = null;
 
 		try {

@@ -49,4 +49,11 @@
 	<%
 		}
 	%>
+	
+	<% if (request.getParameter("confirmation") != null) { %>
+	<div class="alert alert-info">
+		<b>Confirmation: </b>
+		<%= request.getParameter("confirmation") %>
+	</div>
+	<% } %>
 </div>

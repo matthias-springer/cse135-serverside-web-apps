@@ -20,8 +20,14 @@ public class ProductHandler extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		if (request.getSession().getAttribute("username") == null) {
+			response.sendRedirect("user/login.jsp");
+			return;
+		}
+		
 		String error = null;
-
+		String confirmation = null;
+		
 		try {
 			Integer ID = Integer.parseInt(request.getParameter("ID"));
 			String name = request.getParameter("name");
@@ -41,6 +47,10 @@ public class ProductHandler extends HttpServlet {
 					error = "Update of product " + ID + " (" + name
 							+ ") failed!";
 				}
+				else {
+					confirmation = "Updated an existing proudct " + name + " with SKU " + SKU + " and price " + 
+							price + " and cateogory " + Category.findCategoryByID(category).getName() + "!";
+				}
 			} else if (request.getParameter("type").equals("Delete")) {
 				if (!Product.findProductByID(ID).delete()) {
 					error = "Deletion of product " + ID + " (" + name
@@ -51,6 +61,10 @@ public class ProductHandler extends HttpServlet {
 
 				if (!pr.save()) {
 					error = "Insertion of product (" + name + ") failed!";
+				}
+				else {
+					confirmation = "Inserted a new product " + name + " with SKU " + SKU + " and price " + 
+							price + " and cateogory " + Category.findCategoryByID(category).getName() + "!";
 				}
 			}
 			else if (request.getParameter("type").equals("Order")) {
@@ -68,7 +82,8 @@ public class ProductHandler extends HttpServlet {
 					+ (request.getParameter("keyword") == null ? "" : request
 							.getParameter("keyword"))
 					+ (error == null ? "" : "&error=" + error)
-					+ "&type=" + request.getParameter("pagetype"));
+					+ "&pagetype=" + request.getParameter("pagetype")
+					+ (confirmation == null ? "" : "&confirmation=" + confirmation));
 		}
 	}
 
