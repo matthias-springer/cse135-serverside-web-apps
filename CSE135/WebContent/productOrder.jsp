@@ -29,7 +29,13 @@
 				&& ((Cart) request.getSession().getAttribute("cart"))
 						.getCart().size() > 0) {
 	%>
-	<h2>Current shopping cart</h2>
+	
+	<% if (pageType == 2) { %>
+		<h2>You just bought the following items!</h2>
+	<% } else { %>
+		<h2>Current shopping cart</h2>
+	<% } %>
+	
 	<table class="table table-striped">
 		<tr>
 			<td><b>Name</b></td>
