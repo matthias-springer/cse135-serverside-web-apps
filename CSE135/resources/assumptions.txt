@@ -1,0 +1,16 @@
+Assumptions made in the design of application:
+
+Persistent v/s Non-persistent cart: We decided to go with the cart-in-the-session approach for the following reasons:
+When the website is experiencing heavy load, i.e., there are many customers online, it may not be a good idea to store the contents of each customer’s cart in the database. Addition of each item into the cart would cause a database call. With many users filling up their carts, this could quickly overwhelm the database.
+A shopping cart is meant to be a temporary storage in some sense. Assuming a user usually buys only one or two items at a time, if the store runs out of stock for some or all of these products by the time the customer hits the “Purchase” button, we can safely show a message saying “Sorry, the item you tried to buy is no longer available”. While this could offend some customers, it doesn’t seem to happen as often. If anything (and as a future enhancement), we can keep a note of which items we failed to offer to the customer and notify him/her as soon as it is available again.
+
+Right now, we are anyway assuming that there are unlimited instances of each item in the store. So we can always authorize a purchase safely. 
+
+Since the cart is in the session, if the cart information is lost if the session is lost.
+
+The prices of the products are integers. However, this is not a limitation.
+
+The search is case-insensitive.
+
+The most frequently occurring scenario for owner is to add products. For users, it is browse product. Hence after login page, product page is shown.
+
