@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import user.User;
+
 @WebServlet("/ProductOrderHandler")
 public class ProductOrderHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -31,7 +33,7 @@ public class ProductOrderHandler extends HttpServlet {
 				else if(request.getParameter("type").equals("Update"))
 					cart.updateCart(Integer.parseInt(request.getParameter("ID")), Integer.parseInt(request.getParameter("quantity")));
 				else if (request.getParameter("type").equals("Purchase")) {
-					cart.save((String) session.getAttribute("username"), session.getId());
+					cart.save(((User) session.getAttribute("user")).getID());
 					response.sendRedirect("productOrder.jsp?pageType=2");
 					return;
 				}

@@ -22,9 +22,9 @@ public class Product {
 	
 	private Integer category;
 	
-	private int price;
+	private float price;
 	
-	public Product(Integer ID, String name, String SKU, Integer category, int price) {
+	public Product(Integer ID, String name, String SKU, Integer category, float price) {
 		this.ID = ID;
 		this.setName(name);
 		this.setSKU(SKU);
@@ -32,7 +32,7 @@ public class Product {
 		this.setPrice(price);
 	}
 	
-	public Product(String name, String SKU, Integer category, int price) {
+	public Product(String name, String SKU, Integer category, float price) {
 		this.ID = -1;
 		this.setName(name);
 		this.setSKU(SKU);
@@ -64,11 +64,11 @@ public class Product {
 		this.category = category;
 	}
 
-	public int getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 	
@@ -100,16 +100,16 @@ public class Product {
 
 			if (category != -1) {
 				rs = stmt
-						.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE category=" + category + " AND UPPER(name) LIKE '%" + keyword.toUpperCase() + "%' ORDER BY \"ID\"");
+						.executeQuery("SELECT \"id\", name, sku, cid, price FROM public.\"products\" WHERE cid=" + category + " AND UPPER(name) LIKE '%" + keyword.toUpperCase() + "%' ORDER BY \"id\"");
 			}
 			else {
 				rs = stmt
-						.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE UPPER(name) LIKE '%" + keyword.toUpperCase() + "%' ORDER BY \"ID\"");			
+						.executeQuery("SELECT \"id\", name, sku, cid, price FROM public.\"products\" WHERE UPPER(name) LIKE '%" + keyword.toUpperCase() + "%' ORDER BY \"id\"");			
 			}
 			
 			while (rs.next()) {
 				result.add(new Product(rs.getInt("ID"), rs.getString("name"),
-						rs.getString("SKU"), rs.getInt("category"), rs.getInt("price")));
+						rs.getString("SKU"), rs.getInt("cid"), rs.getFloat("price")));
 			}
 
 		} catch (SQLException e) {
@@ -165,23 +165,23 @@ public class Product {
 			
 			if (ID == -1) {
 				PreparedStatement statement = conn
-						.prepareStatement("INSERT INTO public.\"Products\"(name,SKU,category,price) VALUES(?,?,?,?);");
+						.prepareStatement("INSERT INTO public.\"products\"(name,sku,cid,price) VALUES(?,?,?,?);");
 				statement.setString(1, this.name);
 				statement.setString(2, this.SKU);
 				statement.setInt(3, this.category);
-				statement.setInt(4, this.price);
+				statement.setFloat(4, this.price);
 				statement.execute();
 			} else {
 				PreparedStatement statement = conn
-						.prepareStatement("UPDATE public.\"Products\" SET name='"
+						.prepareStatement("UPDATE public.\"products\" SET name='"
 								+ this.name
-								+ "', SKU='"
+								+ "', sku='"
 								+ this.SKU
-								+ "', category="
+								+ "', cid="
 								+ new Integer(this.category).toString()
 								+ ", price="
-								+ new Integer(this.price).toString()
-								+ " WHERE \"ID\"="
+								+ new Float(this.price).toString()
+								+ " WHERE \"id\"="
 								+ new Integer(this.ID).toString());
 				statement.execute();
 			}
@@ -248,7 +248,7 @@ public class Product {
 			// Create the statement
 
 			PreparedStatement statement = conn
-					.prepareStatement("DELETE FROM public.\"Products\" WHERE \"ID\"="
+					.prepareStatement("DELETE FROM public.\"products\" WHERE \"id\"="
 							+ new Integer(this.ID).toString());
 			statement.execute();
 
@@ -314,12 +314,12 @@ public class Product {
 			// Create the statement
 			Statement stmt = conn.createStatement();
 			rs = stmt
-					.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE \"ID\" = "
+					.executeQuery("SELECT \"id\", name, sku, cid, price FROM public.\"products\" WHERE \"id\" = "
 							+ ID);
 
 			while (rs.next()) {
-				return new Product(rs.getInt("ID"), rs.getString("name"),
-						rs.getString("SKU"), rs.getInt("category"), rs.getInt("price"));
+				return new Product(rs.getInt("id"), rs.getString("name"),
+						rs.getString("sku"), rs.getInt("cid"), rs.getFloat("price"));
 			}
 			return null;
 

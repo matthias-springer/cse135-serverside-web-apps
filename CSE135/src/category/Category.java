@@ -68,7 +68,7 @@ public class Category {
 			// Create the statement
 			Statement stmt = conn.createStatement();
 			rs = stmt
-					.executeQuery("SELECT \"ID\", name, SKU, category, price FROM public.\"Products\" WHERE \"category\" = "
+					.executeQuery("SELECT \"id\", name, sku, cid, price FROM public.\"products\" WHERE \"cid\" = "
 							+ ID);
 
 			while (rs.next()) {
@@ -128,10 +128,10 @@ public class Category {
 			// Create the statement
 			Statement stmt = conn.createStatement();
 			rs = stmt
-					.executeQuery("SELECT \"ID\", name, description FROM public.\"ProductCategories\" ORDER BY \"ID\"");
+					.executeQuery("SELECT \"id\", name, description FROM public.\"categories\" ORDER BY \"id\"");
 
 			while (rs.next()) {
-				result.add(new Category(rs.getInt("ID"), rs.getString("name"),
+				result.add(new Category(rs.getInt("id"), rs.getString("name"),
 						rs.getString("description")));
 			}
 
@@ -188,17 +188,17 @@ public class Category {
 
 			if (ID == -1) {
 				PreparedStatement statement = conn
-						.prepareStatement("INSERT INTO public.\"ProductCategories\"(name,description) VALUES(?,?);");
+						.prepareStatement("INSERT INTO public.\"categories\"(name,description) VALUES(?,?);");
 				statement.setString(1, this.name);
 				statement.setString(2, this.description);
 				statement.execute();
 			} else {
 				PreparedStatement statement = conn
-						.prepareStatement("UPDATE public.\"ProductCategories\" SET name='"
+						.prepareStatement("UPDATE public.\"categories\" SET name='"
 								+ this.name
 								+ "', description='"
 								+ this.description
-								+ "' WHERE \"ID\"="
+								+ "' WHERE \"id\"="
 								+ new Integer(this.ID).toString());
 				statement.execute();
 			}
@@ -265,7 +265,7 @@ public class Category {
 			// Create the statement
 
 			PreparedStatement statement = conn
-					.prepareStatement("DELETE FROM public.\"ProductCategories\" WHERE \"ID\"="
+					.prepareStatement("DELETE FROM public.\"categories\" WHERE \"id\"="
 							+ new Integer(this.ID).toString());
 			statement.execute();
 
@@ -331,11 +331,11 @@ public class Category {
 			// Create the statement
 			Statement stmt = conn.createStatement();
 			rs = stmt
-					.executeQuery("SELECT \"ID\", name, description FROM public.\"ProductCategories\" WHERE \"ID\" = "
+					.executeQuery("SELECT \"id\", name, description FROM public.\"categories\" WHERE \"id\" = "
 							+ ID);
 
 			while (rs.next()) {
-				return new Category(rs.getInt("ID"), rs.getString("name"),
+				return new Category(rs.getInt("id"), rs.getString("name"),
 						rs.getString("description"));
 			}
 			return null;

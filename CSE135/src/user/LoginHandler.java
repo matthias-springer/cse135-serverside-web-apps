@@ -24,6 +24,9 @@ public class LoginHandler extends HttpServlet {
 		if (User.exists(request.getParameter("name"))) {
 			HttpSession session = request.getSession();
 			session.setAttribute("username", request.getParameter("name"));
+			session.setAttribute("user", User.findUserByName(request.getParameter("name")));
+			
+			if (session.getAttribute("user") == null) System.out.println("(debug) ERROR!");
 			
 			if (user.User.findUserByName((String) request.getSession().getAttribute("username")).isOwner())
 				response.sendRedirect("../product.jsp?pagetype=admin");

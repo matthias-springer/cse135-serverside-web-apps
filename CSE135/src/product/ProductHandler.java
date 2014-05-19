@@ -37,7 +37,7 @@ public class ProductHandler extends HttpServlet {
 			String SKU = request.getParameter("SKU");
 			Integer category = Integer.parseInt(request
 					.getParameter("category"));
-			Integer price = Integer.parseInt(request.getParameter("price"));
+			Float price = Float.parseFloat(request.getParameter("price"));
 
 			if (request.getParameter("type").equals("Update")) {
 				Product pr = Product.findProductByID(ID);
@@ -81,6 +81,7 @@ public class ProductHandler extends HttpServlet {
 				return;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			error = "Failed to insert/update/delete tuple!";
 		}
 

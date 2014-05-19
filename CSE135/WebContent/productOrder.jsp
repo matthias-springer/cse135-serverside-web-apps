@@ -116,7 +116,7 @@
 	<p>
 		<b>Total price: </b>
 		<%=((Cart) request.getSession().getAttribute("cart"))
-						.getTotal()%>
+						.getTotal() %>
 	</p>
 	<%
 		if (pageType == 0) {

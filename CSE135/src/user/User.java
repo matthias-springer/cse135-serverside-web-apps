@@ -6,6 +6,8 @@ import connection.ConnectToDB;
 
 public class User {
 
+	private int ID;
+	
 	private String name;
 
 	private int age;
@@ -15,16 +17,43 @@ public class User {
 	private String role;
 
 	public boolean isOwner() {
-		return role.equals("O");
+		return role.equals("owner");
 	}
 	
-	public User(String name, int age, String state, String role) {
+	public User(int ID, String name, int age, String state, String role) {
+		this.ID = ID;
 		this.name = name;
 		this.age = age;
 		this.state = state;
 		this.role = role;
+		
+		if (this.role.toUpperCase().equals("O")) {
+			this.role = "owner";
+		}
+		else if (this.role.toUpperCase().equals("U")) {
+			this.role = "customer";
+		}
 	}
 
+	public User(String name, int age, String state, String role) {
+		this.ID = -1;
+		this.name = name;
+		this.age = age;
+		this.state = state;
+		this.role = role;
+		
+		if (this.role.toUpperCase().equals("O")) {
+			this.role = "owner";
+		}
+		else if (this.role.toUpperCase().equals("U")) {
+			this.role = "customer";
+		}
+	}
+	
+	public int getID() {
+		return ID;
+	}
+	
 	public boolean save() {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -40,7 +69,7 @@ public class User {
 			conn.setAutoCommit(false);
 			// Create the statement
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO public.\"Users\"(name,role,age,state) VALUES(?,?,?,?);");
+					.prepareStatement("INSERT INTO public.\"users\"(name,role,age,state) VALUES(?,?,?,?);");
 			statement.setString(1, this.name);
 			statement.setString(2, this.role);
 			statement.setInt(3, this.age);
@@ -108,11 +137,11 @@ public class User {
 			// Create the statement
 			Statement stmt = conn.createStatement();
 			rs = stmt
-					.executeQuery("SELECT name,role,age,state FROM public.\"Users\" WHERE name = '"
+					.executeQuery("SELECT \"id\",name,role,age,state FROM public.\"users\" WHERE name = '"
 							+ name + "'");
 			
 			while (rs.next()) {
-				return new User(rs.getString("name"), rs.getInt("age"),
+				return new User(rs.getInt("id"), rs.getString("name"), rs.getInt("age"),
 						rs.getString("state"), rs.getString("role"));
 			}
 			return null;
