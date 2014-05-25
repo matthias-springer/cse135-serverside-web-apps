@@ -1,17 +1,16 @@
-﻿
 DROP TABLE users CASCADE;
 DROP TABLE categories CASCADE;
 DROP TABLE products CASCADE;
-DROP TABLE carts CASCADE;
-
+DROP TABLE sales CASCADE;
 
 CREATE TABLE users (
-    id          SERIAL PRIMARY KEY,
-    name        TEXT NOT NULL UNIQUE,
-    role        TEXT,
-    age   	INTEGER,
-    state  	TEXT
+   id          SERIAL PRIMARY KEY,
+   name        TEXT NOT NULL UNIQUE,
+   role        TEXT NOT NULL,
+   age         INTEGER NOT NULL,
+   state       TEXT NOT NULL
 );
+
 INSERT INTO users (name, role, age, state) VALUES('Adam','owner',35,'california');
 INSERT INTO users (name, role, age, state) VALUES('Bruce','owner',46,'Illinois');
 INSERT INTO users (name, role, age, state) VALUES('David','customer',33,'New York');
@@ -37,39 +36,39 @@ SELECT * FROM categories order by id asc;
 
 CREATE TABLE products (
     id          SERIAL PRIMARY KEY,
-    cid         INTEGER REFERENCES categories (id),
+    cid         INTEGER REFERENCES categories (id) ON DELETE CASCADE,
     name        TEXT NOT NULL,
     SKU         TEXT NOT NULL UNIQUE,
-    price       FLOAT NOT NULL
+    price       INTEGER NOT NULL
 );
 INSERT INTO products (cid, name, SKU, price) VALUES(1, 'Apple MacBook','103001',1200);
 INSERT INTO products (cid, name, SKU, price) VALUES(1, 'HP Laptop',    '106044', 480);
-INSERT INTO products (cid, name, SKU, price) VALUES(1, 'Dell Laptop',  '109023', 399.99);
+INSERT INTO products (cid, name, SKU, price) VALUES(1, 'Dell Laptop',  '109023', 399);
 INSERT INTO products (cid, name, SKU, price) VALUES(2, 'Iphone 5s',        '200101', 709);
-INSERT INTO products (cid, name, SKU, price) VALUES(2, 'Samsung Galaxy S4','208809', 488.5);
+INSERT INTO products (cid, name, SKU, price) VALUES(2, 'Samsung Galaxy S4','208809', 488);
 INSERT INTO products (cid, name, SKU, price) VALUES(2, 'LG Optimus g',     '209937', 375);
-INSERT INTO products (cid, name, SKU, price) VALUES(3, 'Sony DSC-RX100M','301211', 689.7);
-INSERT INTO products (cid, name, SKU, price) VALUES(3, 'Canon EOS Rebel T3',  '304545', 449.9);
+INSERT INTO products (cid, name, SKU, price) VALUES(3, 'Sony DSC-RX100M','301211', 689);
+INSERT INTO products (cid, name, SKU, price) VALUES(3, 'Canon EOS Rebel T3',  '304545', 449);
 INSERT INTO products (cid, name, SKU, price) VALUES(3, 'Nikon D3100',  '308898', 520);
-INSERT INTO products (cid, name, SKU, price) VALUES(4, 'Xbox 360',  '405065', 249.99);
-INSERT INTO products (cid, name, SKU, price) VALUES(4, 'Nintendo Wii U ',  '407033', 430.99);
-INSERT INTO products (cid, name, SKU, price) VALUES(4, 'Nintendo Wii',  '408076', 232.99);
+INSERT INTO products (cid, name, SKU, price) VALUES(4, 'Xbox 360',  '405065', 249);
+INSERT INTO products (cid, name, SKU, price) VALUES(4, 'Nintendo Wii U ',  '407033', 430);
+INSERT INTO products (cid, name, SKU, price) VALUES(4, 'Nintendo Wii',  '408076', 232);
 SELECT * FROM products order by id asc;
 
 
-CREATE TABLE carts (
+CREATE TABLE sales (
     id          SERIAL PRIMARY KEY,
-    uid         INTEGER REFERENCES users (id) ON DELETE SET NULL,
-    pid         INTEGER REFERENCES products (id) ON DELETE SET NULL,
-    quantity    INTEGER,
-    price       FLOAT
+    uid         INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    pid         INTEGER REFERENCES products (id) ON DELETE CASCADE,
+    quantity    INTEGER NOT NULL,
+    price       INTEGER NOT NULL
 );
-INSERT INTO carts (uid, pid, quantity,price) VALUES(3, 1 , 2, 1200);
-INSERT INTO carts (uid, pid, quantity,price) VALUES(3, 2 , 1, 480);
-INSERT INTO carts (uid, pid, quantity,price) VALUES(4, 10, 4, 249.99);
-INSERT INTO carts (uid, pid, quantity,price) VALUES(5, 12, 2, 465.98);
-INSERT INTO carts (uid, pid, quantity,price) VALUES(5, 9 , 5, 520);
-INSERT INTO carts (uid, pid, quantity,price) VALUES(5, 5 , 3, 488.5);
-INSERT INTO carts (uid, pid, quantity,price) VALUES(6, 10, 3, 249.99);
-SELECT * FROM carts order by id desc;
+INSERT INTO sales (uid, pid, quantity,price) VALUES(3, 1 , 2, 1200);
+INSERT INTO sales (uid, pid, quantity,price) VALUES(3, 2 , 1, 480);
+INSERT INTO sales (uid, pid, quantity,price) VALUES(4, 10, 4, 249);
+INSERT INTO sales (uid, pid, quantity,price) VALUES(5, 12, 2, 465);
+INSERT INTO sales (uid, pid, quantity,price) VALUES(5, 9 , 5, 520);
+INSERT INTO sales (uid, pid, quantity,price) VALUES(5, 5 , 3, 488);
+INSERT INTO sales (uid, pid, quantity,price) VALUES(6, 10, 3, 249);
+SELECT * FROM sales order by id desc;
 
