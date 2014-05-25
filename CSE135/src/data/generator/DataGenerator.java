@@ -22,9 +22,9 @@ public class DataGenerator
 	public static void main(String[] args) throws Exception
 	{
 		int Num_users		=	100;
-		int Num_categories	=	10;
-		int Num_products	=	1000;
-		int Num_sales		=	10000;
+		int Num_categories	=	100;
+		int Num_products	=	100;
+		int Num_sales		=	1000;
 		DataGenerator dg=new DataGenerator();
 		dg.createData(Num_users,Num_categories,Num_products,Num_sales);
 		System.out.println("-------------finish-----------");

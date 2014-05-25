@@ -85,7 +85,7 @@ public class Cart {
 			//statement.execute();
 
 			PreparedStatement statement1 = conn
-					.prepareStatement("INSERT INTO public.\"carts\"(\"uid\",\"pid\",\"quantity\", price) VALUES(?,?,?,?);");
+					.prepareStatement("INSERT INTO public.\"sales\"(\"uid\",\"pid\",\"quantity\", price) VALUES(?,?,?,?);");
 			statement1.setInt(1, userid);
 			for (Integer key : cart.keySet()) {
 				statement1.setInt(2, key);

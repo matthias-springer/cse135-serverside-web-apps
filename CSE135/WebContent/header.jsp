@@ -25,6 +25,9 @@
 	<p>
 		<a style="float: right; margin-right: 10px;" href="category.jsp">Categories</a>
 	</p>
+	<p>
+		<a style="float: right; margin-right: 10px;" href="salesAnalytics.jsp">Sales Analytics</a>
+	</p>
 	<% } else {%>
 	<p>
 		<a style="float: right; margin-right: 10px;"
