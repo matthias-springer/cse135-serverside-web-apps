@@ -1,13 +1,6 @@
--- age range fix - done
--- fix nomenclature issues - done
--- fix bigint everywhere - done; only need bigint in return type column
--- complete the proper order-by logic - done
--- return new offset in a separate row - done
--- Test with dummy data - should be easier on client side :)
-
 DROP FUNCTION generate_report_customers(integer,integer,text,integer,integer);
 CREATE OR REPLACE FUNCTION generate_report_customers(product_offset INTEGER, customer_offset INTEGER, state_name TEXT, categoryid INTEGER, age_rangeid INTEGER)
-RETURNS TABLE(user_name TEXT, product_name TEXT, sales BIGINT, user_sort_id INTEGER, product_sort_id INTEGER) 
+RETURNS TABLE(user_name TEXT, product_name TEXT, sales BIGINT) 
 AS $func$
 
 DECLARE 
@@ -85,6 +78,9 @@ ORDER BY top10.name ASC;
 
 
 RETURN QUERY
+SELECT t.user_name, t.product_name, t.sales
+FROM 
+(
 SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, '' AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
 UNION
 SELECT U.name AS user_name, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
@@ -99,7 +95,8 @@ FROM top20users t20u
 UNION
 SELECT 'all' AS user_name, t10p.name AS product_name, t10p.sales AS sales, t10p.user_sort_id,  t10p.product_sort_id
 FROM top10products t10p
-ORDER BY user_sort_id, user_name, product_sort_id, product_name;
+) AS t
+ORDER BY t.user_sort_id, t.user_name, t.product_sort_id, t.product_name;
 
 
 drop table top20users;
@@ -107,5 +104,4 @@ drop table top10products;
 
 END;
 $func$ LANGUAGE plpgsql;
-
 --select * from generate_report_customers(0,40,'all',-1,-1);
