@@ -2,6 +2,7 @@ DROP TABLE users CASCADE;
 DROP TABLE categories CASCADE;
 DROP TABLE products CASCADE;
 DROP TABLE sales CASCADE;
+DROP TABLE agerange CASCADE;
 
 CREATE TABLE users (
    id          SERIAL PRIMARY KEY,
@@ -72,3 +73,16 @@ INSERT INTO sales (uid, pid, quantity,price) VALUES(5, 5 , 3, 488);
 INSERT INTO sales (uid, pid, quantity,price) VALUES(6, 10, 3, 249);
 SELECT * FROM sales order by id desc;
 
+CREATE TABLE agerange
+(
+  rangeid INTEGER NOT NULL,
+  lower_limit INTEGER NOT NULL,
+  upper_limit INTEGER NOT NULL,
+  CONSTRAINT agerange_pkey PRIMARY KEY (rangeid)
+);
+
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 12, 18);
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 18, 45);
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 45, 65);
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 65, 200);
+SELECT * FROM agerange order by rangeid asc;
