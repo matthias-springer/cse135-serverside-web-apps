@@ -1,7 +1,10 @@
-DROP FUNCTION generate_report_states(integer,integer,integer,integer);
-CREATE FUNCTION generate_report_states(product_offset INTEGER, state_offset INTEGER, categoryid INTEGER, age_rangeid INTEGER)
-RETURNS TABLE(state_name TEXT, product_name TEXT, sales BIGINT) 
-AS $func$
+-- Function: generate_report_states(integer, integer, integer, integer)
+
+-- DROP FUNCTION generate_report_states(integer, integer, integer, integer);
+
+CREATE OR REPLACE FUNCTION generate_report_states(IN product_offset integer, IN state_offset integer, IN categoryid integer, IN age_rangeid integer)
+  RETURNS TABLE(state_name text, product_name text, sales bigint) AS
+$BODY$
 
 DECLARE 
 age_lower integer := (SELECT lower_limit FROM agerange WHERE rangeid = age_rangeid);
@@ -120,5 +123,9 @@ drop table top20states;
 drop table top10products;
 
 END;
-$func$ LANGUAGE plpgsql;
---select * from generate_report_states(0,0,-1,-1);
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION generate_report_states(integer, integer, integer, integer)
+  OWNER TO postgres;
