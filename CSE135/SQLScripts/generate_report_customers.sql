@@ -11,6 +11,7 @@ age_lower integer := (SELECT lower_limit FROM agerange WHERE rangeid = age_range
 age_upper integer := (SELECT upper_limit FROM agerange WHERE rangeid = age_rangeid);
 --implementing check for Next20customers button only. Next10products button is supposed to show up all the time
 new_customer_offset integer := customer_offset+20;
+new_product_offset integer := product_offset+10;
 exist_more_users integer :=0;
 
 BEGIN
@@ -94,7 +95,7 @@ RETURN QUERY
 SELECT t.user_name, t.product_name, t.sales
 FROM 
 (
-SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, '' AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
+SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
 UNION
 SELECT U.name AS user_name, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
 FROM top20users U

@@ -83,9 +83,9 @@ CREATE TABLE agerange
 );
 
 INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 12, 18);
-INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 18, 45);
-INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 45, 65);
-INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (1, 65, 200);
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (2, 18, 45);
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (3, 45, 65);
+INSERT INTO agerange(rangeid, lower_limit, upper_limit) VALUES (4, 65, 200);
 SELECT * FROM agerange order by rangeid asc;
 
 CREATE TABLE states

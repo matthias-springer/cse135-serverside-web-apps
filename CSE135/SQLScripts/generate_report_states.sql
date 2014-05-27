@@ -11,6 +11,7 @@ age_lower integer := (SELECT lower_limit FROM agerange WHERE rangeid = age_range
 age_upper integer := (SELECT upper_limit FROM agerange WHERE rangeid = age_rangeid);
 --implementing check for Next20states button only. Next10products button is supposed to show up all the time
 new_state_offset integer := state_offset+20;
+new_product_offset integer := product_offset+10;
 exist_more_states integer :=0;
 
 BEGIN
@@ -46,13 +47,13 @@ LEFT JOIN products P
 ON P.id = S.pid
 WHERE (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
 AND (categoryid = -1 OR (P.cid = categoryid))
-GROUP BY St.id, St.name
+--GROUP BY St.id, St.name
 ORDER BY St.name ASC
 OFFSET state_offset
 LIMIT 20
 )AS top20
 LEFT JOIN users U
-ON top20.name = U.name
+ON top20.name = U.state
 LEFT JOIN sales S
 ON U.id = S.uid
 GROUP BY top20.id, top20.name
@@ -85,7 +86,7 @@ LEFT JOIN users U
 ON S.uid = U.id
 WHERE (categoryid = -1 OR P.cid = categoryid)
 AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
-ORDER BY name ASC
+ORDER BY P.name ASC
 OFFSET product_offset
 LIMIT 10
 )AS top10
@@ -99,7 +100,7 @@ RETURN QUERY
 SELECT t.state_name, t.product_name, t.sales
 FROM 
 (
-SELECT CASE WHEN (exist_more_states = 1) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state_name, '' AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
+SELECT CASE WHEN (exist_more_states = 1) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
 UNION
 SELECT St.name AS state_name, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS state_sort_id, 1 AS product_sort_id
 FROM top20states St
