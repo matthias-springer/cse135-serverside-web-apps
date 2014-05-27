@@ -31,9 +31,7 @@ CREATE TEMP TABLE top10products(
 
 
 INSERT INTO top20states
-SELECT top20.*, SUM(S.price*S.quantity) AS sales, 1 AS state_sort_id, 0 AS product_sort_id
-FROM
-(SELECT DISTINCT St.id, St.name
+SELECT St.id, St.name, SUM(S.price*S.quantity) AS sales, 1 AS state_sort_id, 0 AS product_sort_id
 FROM states St
 LEFT JOIN users U
 ON U.state = St.name
@@ -46,16 +44,9 @@ AND (categoryid = -1 OR (P.cid = categoryid))
 GROUP BY St.id, St.name
 ORDER BY St.name ASC
 OFFSET state_offset
-LIMIT 20
-)AS top20
-LEFT JOIN users U
-ON top20.name = U.name
-LEFT JOIN sales S
-ON U.id = S.uid
-GROUP BY top20.id, top20.name
-ORDER BY top20.name ASC;
+LIMIT 20;
 
-PERFORM DISTINCT St.name
+PERFORM *
 FROM states St
 LEFT JOIN users U
 ON U.state = St.name
