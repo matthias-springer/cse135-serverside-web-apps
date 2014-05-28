@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import connection.ConnectToDB;
+
 public class Database
 {
 	private Connection conn = null;
@@ -15,10 +17,11 @@ public class Database
 	{
 	   try{
 	    try{Class.forName("org.postgresql.Driver");}catch(Exception e){System.out.println("Driver error");}
-	    String url="jdbc:postgresql://localhost/CSE135DB"; //database name
+	    String url="jdbc:postgresql://localhost/postgres"; //database name
 	    String user="postgres";							 //username
 	    String password="postgres";						//password
-	    conn=DriverManager.getConnection(url, user, password);
+	    //conn=DriverManager.getConnection(url, user, password);
+	    conn = DriverManager.getConnection(ConnectToDB.getConnectionString());
 	    return true;
 	    }
 	   catch(SQLException e)

@@ -1,6 +1,8 @@
 package user;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import connection.ConnectToDB;
 
@@ -121,6 +123,66 @@ public class User {
 		}
 	}
 
+	public static List<String> getAllStates()
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String connectionString = ConnectToDB.getConnectionString();
+		List<String> result = new ArrayList<String>();
+		
+		// Registering Postgresql JDBC driver with the DriverManager
+		try {
+			// Registering Postgresql JDBC driver with the DriverManager
+			Class.forName("org.postgresql.Driver");
+
+			// Open a connection to the database using DriverManager
+			conn = DriverManager.getConnection(connectionString);
+
+			// Create the statement
+			Statement stmt = conn.createStatement();
+			rs = stmt
+					.executeQuery("SELECT * from public.states");
+			
+			while (rs.next()) {
+				result.add(rs.getString("name"));
+			}
+			
+			return result;
+		} catch (SQLException e) {
+			System.out.println(e);
+			return null;
+		} catch (ClassNotFoundException e) {
+			System.out.println(e);
+			return null;
+		} finally {
+			// Release resources in a finally block in reverse-order of
+			// their creation
+
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				} // Ignore
+				rs = null;
+			}
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				} // Ignore
+				pstmt = null;
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				} // Ignore
+				conn = null;
+			}
+		}
+	}
+	
 	public static User findUserByName(String name) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
