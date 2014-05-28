@@ -82,7 +82,7 @@ public class AnalyticsTableEntry {
 	}
 	
 
-	public static  List<AnalyticsTableEntry> getStatesSalesAnalyticsDataFromDatabase(int productOffset, int customerOffset,
+	public static  List<AnalyticsTableEntry> getStatesSalesAnalyticsDataFromDatabase(int productOffset, int customerOffset, String state,
 			int  categoryID, int ageRangeID) {
 
 		List<AnalyticsTableEntry> result = new ArrayList<AnalyticsTableEntry>();
@@ -94,15 +94,16 @@ public class AnalyticsTableEntry {
 		try {
 			Class.forName("org.postgresql.Driver");
 			conn = DriverManager.getConnection(connectionString);
-			PreparedStatement stmt = conn.prepareStatement("select * from generate_report_states(?,?,?,?)");
+			PreparedStatement stmt = conn.prepareStatement("select * from generate_report_states(?,?,?,?,?)");
 			stmt.setInt(1, productOffset);
 			stmt.setInt(2, customerOffset);
-			stmt.setInt(3, categoryID);
-			stmt.setInt(4, ageRangeID);
+			stmt.setString(3, state);
+			stmt.setInt(4, categoryID);
+			stmt.setInt(5, ageRangeID);
 			rs = stmt.executeQuery();
 			
 			while (rs.next()) {
-				AnalyticsTableEntry entry = new AnalyticsTableEntry(rs.getString("state_name"), rs.getString("product_name"), rs.getInt("sales"));
+				AnalyticsTableEntry entry = new AnalyticsTableEntry(rs.getString("state"), rs.getString("product_name"), rs.getInt("sales"));
 				result.add(entry);
 			}
 
