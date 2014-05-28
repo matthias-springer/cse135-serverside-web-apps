@@ -107,8 +107,9 @@
 								List<String> states = user.User.getAllStates();
 								for (String st : states) {
 							%>
-							<option value="<%=st%>"><%=st%></option>
+							<option value="<%=st%>" <%= st.equals(request.getParameter("state")) ? "selected=\"selected\"" : "" %>><%=st%></option>
 							<%
+							//http://localhost:8080/CSE135/salesAnalytics.jsp?row=customers&state=Massachusetts&categoryID=-1&ageRangeID=-1&rowOffset=0&productOffset=0
 								}
 							%>
 					</select></td>
