@@ -2,8 +2,8 @@
 
 -- DROP FUNCTION generate_report_states(integer, integer, integer, integer);
 
-CREATE OR REPLACE FUNCTION generate_report_states(IN product_offset integer, IN state_offset integer, IN categoryid integer, IN age_rangeid integer)
-  RETURNS TABLE(state_name text, product_name text, sales bigint) AS
+CREATE OR REPLACE FUNCTION generate_report_states(IN product_offset integer, IN state_offset integer, IN state_name text, IN categoryid integer, IN age_rangeid integer)
+  RETURNS TABLE(state text, product_name text, sales bigint) AS
 $BODY$
 
 DECLARE 
@@ -45,9 +45,9 @@ LEFT JOIN sales S
 ON U.id = S.uid
 LEFT JOIN products P
 ON P.id = S.pid
-WHERE (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+WHERE (state_name = 'all' OR U.state = state_name) 
+AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
 AND (categoryid = -1 OR (P.cid = categoryid))
---GROUP BY St.id, St.name
 ORDER BY St.name ASC
 OFFSET state_offset
 LIMIT 20
@@ -67,7 +67,8 @@ LEFT JOIN sales S
 ON U.id = S.uid
 LEFT JOIN products P
 ON P.id = S.pid
-WHERE (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+WHERE (state_name = 'all' OR U.state = state_name) 
+AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
 AND (categoryid = -1 OR (P.cid = categoryid))
 ORDER BY St.name ASC
 OFFSET new_state_offset
@@ -84,7 +85,8 @@ LEFT JOIN sales S
 ON P.id = S.pid
 LEFT JOIN users U
 ON S.uid = U.id
-WHERE (categoryid = -1 OR P.cid = categoryid)
+WHERE (state_name = 'all' OR U.state = state_name)
+AND (categoryid = -1 OR P.cid = categoryid)
 AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
 ORDER BY P.name ASC
 OFFSET product_offset
@@ -97,12 +99,12 @@ ORDER BY top10.name ASC;
 
 
 RETURN QUERY
-SELECT t.state_name, t.product_name, t.sales
+SELECT t.state, t.product_name, t.sales
 FROM 
 (
-SELECT CASE WHEN (exist_more_states = 1) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
+SELECT CASE WHEN (exist_more_states = 1) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
 UNION
-SELECT St.name AS state_name, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS state_sort_id, 1 AS product_sort_id
+SELECT St.name AS state, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS state_sort_id, 1 AS product_sort_id
 FROM top20states St
 CROSS JOIN top10products P
 LEFT JOIN users U
@@ -111,13 +113,13 @@ LEFT JOIN sales S
 ON (P.id = S.pid AND U.id = S.uid)
 GROUP BY St.name, P.name
 UNION
-SELECT t20s.name AS state_name, 'all' AS product_name, t20s.sales AS sales, t20s.state_sort_id,  t20s.product_sort_id
+SELECT t20s.name AS state, 'all' AS product_name, t20s.sales AS sales, t20s.state_sort_id,  t20s.product_sort_id
 FROM top20states t20s
 UNION
-SELECT 'all' AS state_name, t10p.name AS product_name, t10p.sales AS sales, t10p.state_sort_id,  t10p.product_sort_id
+SELECT 'all' AS state, t10p.name AS product_name, t10p.sales AS sales, t10p.state_sort_id,  t10p.product_sort_id
 FROM top10products t10p
 ) AS t
-ORDER BY t.state_sort_id, t.state_name, t.product_sort_id, t.product_name;
+ORDER BY t.state_sort_id, t.state, t.product_sort_id, t.product_name;
 
 
 drop table top20states;
@@ -128,5 +130,5 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-ALTER FUNCTION generate_report_states(integer, integer, integer, integer)
+ALTER FUNCTION generate_report_states(integer, integer, text, integer, integer)
   OWNER TO postgres;
