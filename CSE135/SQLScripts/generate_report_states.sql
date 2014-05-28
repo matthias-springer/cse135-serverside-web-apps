@@ -37,17 +37,8 @@ CREATE TEMP TABLE top10products(
 INSERT INTO top20states
 SELECT top20.*, SUM(S.price*S.quantity) AS sales, 1 AS state_sort_id, 0 AS product_sort_id
 FROM
-(SELECT DISTINCT St.id, St.name
+(SELECT St.id, St.name
 FROM states St
-LEFT JOIN users U
-ON U.state = St.name
-LEFT JOIN sales S
-ON U.id = S.uid
-LEFT JOIN products P
-ON P.id = S.pid
-WHERE (state_name = 'all' OR U.state = state_name) 
-AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
-AND (categoryid = -1 OR (P.cid = categoryid))
 ORDER BY St.name ASC
 OFFSET state_offset
 LIMIT 20
@@ -61,15 +52,6 @@ ORDER BY top20.name ASC;
 
 PERFORM DISTINCT St.name
 FROM states St
-LEFT JOIN users U
-ON U.state = St.name
-LEFT JOIN sales S
-ON U.id = S.uid
-LEFT JOIN products P
-ON P.id = S.pid
-WHERE (state_name = 'all' OR U.state = state_name) 
-AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
-AND (categoryid = -1 OR (P.cid = categoryid))
 ORDER BY St.name ASC
 OFFSET new_state_offset
 LIMIT 1;
@@ -81,13 +63,7 @@ SELECT top10.id, top10.name, SUM(S.price*S.quantity) AS sales, 0 AS user_sort_id
 FROM 
 (SELECT DISTINCT P.id, P.name, P.cid
 FROM products P
-LEFT JOIN sales S
-ON P.id = S.pid
-LEFT JOIN users U
-ON S.uid = U.id
-WHERE (state_name = 'all' OR U.state = state_name)
-AND (categoryid = -1 OR P.cid = categoryid)
-AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+WHERE (categoryid = -1 OR P.cid = categoryid)
 ORDER BY P.name ASC
 OFFSET product_offset
 LIMIT 10
