@@ -97,7 +97,6 @@ public class AnalyticsTableEntry {
 			PreparedStatement stmt = conn.prepareStatement("select * from generate_report_states(?,?,?,?,?)");
 			stmt.setInt(1, productOffset);
 			stmt.setInt(2, customerOffset);
-			
 			stmt.setString(3, state);
 			stmt.setInt(4, categoryID);
 			stmt.setInt(5, ageRangeID);

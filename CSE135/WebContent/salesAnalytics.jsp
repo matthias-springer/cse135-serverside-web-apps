@@ -57,7 +57,7 @@
 		} else {
 			tableCellEntry = AnalyticsTableEntry
 					.getStatesSalesAnalyticsDataFromDatabase(productOffset,
-							rowOffset, categoryID, ageRangeID);
+							rowOffset,state, categoryID, ageRangeID);
 		}
 
 		int nextRowOffset = Integer.parseInt(tableCellEntry.get(0).row);
