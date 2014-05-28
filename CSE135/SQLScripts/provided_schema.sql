@@ -147,3 +147,11 @@ INSERT INTO states (id,name,abbreviation) VALUES ('49','West Virginia','WV');
 INSERT INTO states (id,name,abbreviation) VALUES ('50','Wisconsin','WI');
 INSERT INTO states (id,name,abbreviation) VALUES ('51','Wyoming','WY');
 SELECT * FROM states order by id asc;
+
+CREATE INDEX ON users using hash (state);
+CREATE INDEX ON users using btree (age);
+CREATE INDEX ON sales using hash (uid);
+CREATE INDEX ON sales using hash (pid);
+CREATE INDEX ON products using hash (id);
+CREATE INDEX ON products using hash (cid);
+
