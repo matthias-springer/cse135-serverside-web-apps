@@ -30,6 +30,17 @@
 	</servlet-mapping>
 	
 	<servlet>
+	
+		<servlet-name>SalesAnalyticsHandler</servlet-name>
+		<servlet-class>sales.analytics.SalesAnalyticsHandler</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>SalesAnalyticsHandler</servlet-name>
+		<url-pattern>/handle_sales_analytics</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>ProductOrderHandler</servlet-name>
 		<servlet-class>product.ProductOrderHandler</servlet-class>
 	</servlet>
@@ -37,4 +48,6 @@
 		<servlet-name>ProductOrderHandler</servlet-name>
 		<url-pattern>/handle_productOrder</url-pattern>
 	</servlet-mapping>
+	
+	
 </web-app>
