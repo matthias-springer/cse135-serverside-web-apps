@@ -73,7 +73,7 @@
 
 	<h1>Select your filters and submit</h1>
 
-	<div id="filters" style="width: 100%; float: left;">
+	<div id="filters" style="width: 100%; float: left; <%= productOffset > 0 || rowOffset > 0 ? "visibility: hidden" : "" %>" >
 
 		<table class="table table-striped">
 			<form action="handle_sales_analytics" method="post">
@@ -218,19 +218,19 @@
 				<%
 					if ("customers".equals(row)) {
 				%>
-				<td>customer/product</td>
+				<td><b>customer/product</b></td>
 				<%
 					} else {
 				%>
-				<td>State/product</td>
+				<td><b>State/product</b></td>
 				<%
 					}
 				%>
 				<%
 					for (int i = 1; i <= numberOfProduct; i++) {
 				%>
-				<td><%=tableCellEntry.get(i).product + "("
-						+ (tableCellEntry.get(i).sales) + ")"%></td>
+				<td><b><%=tableCellEntry.get(i).product + " ("
+						+ (tableCellEntry.get(i).sales) + ")"%></b></td>
 				<%
 					}
 				%>
@@ -251,14 +251,14 @@
 				for (int j = numberOfProduct + 1; j < tableCellEntry.size();) {
 			%>
 			<tr>
-				<td><%=tableCellEntry.get(j).row + "("
+				<td><b><%=tableCellEntry.get(j).row + " ("
 						+ (tableCellEntry.get(j).sales) + ")"%> <%
  	j++;
  		int k = j;
  		for (int i = j; i < k + numberOfProduct
  				&& i < tableCellEntry.size(); i++, j++) {
  %>
-				<td><%=tableCellEntry.get(i).sales%></td>
+				<td><%=tableCellEntry.get(i).sales%></b></td>
 				<%
 					}
 				%>
