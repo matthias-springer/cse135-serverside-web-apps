@@ -81,12 +81,9 @@ FROM
 (
 SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
 UNION
-SELECT U.name AS user_name, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
-FROM top20users U
-CROSS JOIN top10products P
-LEFT JOIN sales S
-ON (P.id = S.pid AND U.id = S.uid)
-GROUP BY U.name, P.name
+SELECT U.name AS user_name, P.name AS product_name, COALESCE((SELECT sum(price*quantity) FROM sales WHERE uid=U.id AND pid=P.id),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
+FROM top20users U, top10products P
+GROUP BY U.name, P.name, U.id, P.id
 UNION
 SELECT t20u.name AS user_name, 'all' AS product_name, t20u.sales AS sales, t20u.user_sort_id,  t20u.product_sort_id
 FROM top20users t20u

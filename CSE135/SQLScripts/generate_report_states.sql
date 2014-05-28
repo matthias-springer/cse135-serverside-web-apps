@@ -80,14 +80,9 @@ FROM
 (
 SELECT CASE WHEN (exist_more_states = 1) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
 UNION
-SELECT St.name AS state, P.name AS product_name, COALESCE(SUM(S.price*S.quantity),0) AS sales, 1 AS state_sort_id, 1 AS product_sort_id
-FROM top20states St
-CROSS JOIN top10products P
-LEFT JOIN users U
-ON St.name = U.state
-LEFT JOIN sales S
-ON (P.id = S.pid AND U.id = S.uid)
-GROUP BY St.name, P.name
+SELECT St.name AS state, P.name AS product_name, COALESCE((SELECT SUM(price*quantity) FROM sales,users U WHERE U.state=St.name and uid=U.id and pid=P.id),0) AS sales, 1 AS state_sort_id, 1 AS product_sort_id
+FROM top20states St, top10products P
+GROUP BY St.name, P.name, P.id
 UNION
 SELECT t20s.name AS state, 'all' AS product_name, t20s.sales AS sales, t20s.state_sort_id,  t20s.product_sort_id
 FROM top20states t20s
