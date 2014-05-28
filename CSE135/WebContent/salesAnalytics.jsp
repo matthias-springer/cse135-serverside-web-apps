@@ -30,42 +30,45 @@
 		}
 	%>
 
-	<%		
-			String row = "customers";
-		    String state = "all";
-			int categoryID = -1;
-			int ageRangeID = -1;
-			int rowOffset = 0;
-			int productOffset = 0;
-			List<AnalyticsTableEntry> tableCellEntry;
-			if (request.getParameter("state") != null) {
-				row = request.getParameter("row");
-				state = request.getParameter("state");
-				categoryID = Integer.parseInt(request
-						.getParameter("categoryID"));
-				ageRangeID = Integer.parseInt(request
-						.getParameter("ageRangeID"));
-				rowOffset = Integer.parseInt(request
-						.getParameter("rowOffset"));
-				productOffset = Integer.parseInt(request
-						.getParameter("productOffset"));
-					}
-			if("customers".equals(row)){
-				tableCellEntry = AnalyticsTableEntry.getCustomerSalesAnalyticsDataFromDatabase( productOffset,rowOffset, state, categoryID, ageRangeID);
-			}else{
-				tableCellEntry = AnalyticsTableEntry.getStatesSalesAnalyticsDataFromDatabase(productOffset,rowOffset, categoryID, ageRangeID);
+	<%
+		String row = "customers";
+		String state = "all";
+		int categoryID = -1;
+		int ageRangeID = -1;
+		int rowOffset = 0;
+		int productOffset = 0;
+		List<AnalyticsTableEntry> tableCellEntry;
+		if (request.getParameter("state") != null) {
+			row = request.getParameter("row");
+			state = request.getParameter("state");
+			categoryID = Integer.parseInt(request
+					.getParameter("categoryID"));
+			ageRangeID = Integer.parseInt(request
+					.getParameter("ageRangeID"));
+			rowOffset = Integer.parseInt(request.getParameter("rowOffset"));
+			productOffset = Integer.parseInt(request
+					.getParameter("productOffset"));
+		}
+		if ("customers".equals(row)) {
+			tableCellEntry = AnalyticsTableEntry
+					.getCustomerSalesAnalyticsDataFromDatabase(
+							productOffset, rowOffset, state, categoryID,
+							ageRangeID);
+		} else {
+			tableCellEntry = AnalyticsTableEntry
+					.getStatesSalesAnalyticsDataFromDatabase(productOffset,
+							rowOffset, categoryID, ageRangeID);
+		}
+
+		int nextRowOffset = Integer.parseInt(tableCellEntry.get(0).row);
+		int nextProdcutOffset = Integer
+				.parseInt(tableCellEntry.get(0).product);
+		int numberOfProduct = 0;
+		for (AnalyticsTableEntry entry : tableCellEntry) {
+			if ("all".equals(entry.row)) {
+				numberOfProduct++;
 			}
-			
-			int nextRowOffset = Integer
-			.parseInt(tableCellEntry.get(0).row);
-			int nextProdcutOffset = Integer
-			.parseInt(tableCellEntry.get(0).product);
-			int numberOfProduct = 0;
-			for (AnalyticsTableEntry entry : tableCellEntry) {
-				if ("all".equals(entry.row)) {
-					numberOfProduct++;
-					}
-			}
+		}
 	%>
 
 	<h1>Select your filters and submit</h1>
@@ -83,118 +86,123 @@
 				</tr>
 				<tr>
 					<td><select name="row">
-					<% if ("customers".equals(row)) { %>
+							<%
+								if ("customers".equals(row)) {
+							%>
 							<option selected="selected" value="customers">customers</option>
-							<option  value="state">states</option>
-							<% } else { %>
+							<option value="state">states</option>
+							<%
+								} else {
+							%>
 							<option value="customers">customers</option>
 							<option selected="selected" value="state">states</option>
 
-							<% } %>
+							<%
+								}
+							%>
 					</select></td>
 					<td><select name="state">
 							<option selected="selected" value="all">All states</option>
-							<option value="AL">AL</option>
-							<option value="AK">AK</option>
-							<option value="AZ">AZ</option>
-							<option value="AR">AR</option>
-							<option value="CA">CA</option>
-							<option value="CO">CO</option>
-							<option value="CT">CT</option>
-							<option value="DE">DE</option>
-							<option value="DC">DC</option>
-							<option value="FL">FL</option>
-							<option value="GA">GA</option>
-							<option value="HI">HI</option>
-							<option value="ID">ID</option>
-							<option value="IL">IL</option>
-							<option value="IN">IN</option>
-							<option value="IA">IA</option>
-							<option value="KS">KS</option>
-							<option value="KY">KY</option>
-							<option value="LA">LA</option>
-							<option value="ME">ME</option>
-							<option value="MD">MD</option>
-							<option value="MA">MA</option>
-							<option value="MI">MI</option>
-							<option value="MN">MN</option>
-							<option value="MS">MS</option>
-							<option value="MO">MO</option>
-							<option value="MT">MT</option>
-							<option value="NE">NE</option>
-							<option value="NV">NV</option>
-							<option value="NH">NH</option>
-							<option value="NJ">NJ</option>
-							<option value="NM">NM</option>
-							<option value="NY">NY</option>
-							<option value="NC">NC</option>
-							<option value="ND">ND</option>
-							<option value="OH">OJ</option>
-							<option value="OK">OK</option>
-							<option value="OR">OR</option>
-							<option value="PA">PA</option>
-							<option value="RI">RI</option>
-							<option value="SC">SC</option>
-							<option value="SD">SD</option>
-							<option value="TN">TN</option>
-							<option value="TX">TX</option>
-							<option value="UT">UT</option>
-							<option value="VT">VT</option>
-							<option value="VA">VA</option>
-							<option value="WA">WA</option>
-							<option value="WV">WV</option>
-							<option value="WI">WI</option>
-							<option value="WY">WY</option>
+							<%
+								List<String> states = user.User.getAllStates();
+								for (String st : states) {
+							%>
+							<option value="<%=st%>"><%=st%></option>
+							<%
+								}
+							%>
 					</select></td>
 					<td><select name="categoryID">
 							<%
 								for (Category cat : Category.getAllCategories()) {
 							%>
-							<% if (categoryID == cat.getID()) { %>
-							<option  selected="selected"  value="<%=cat.getID()%>"><%=cat.getName()%></option>
-							<% } else { %>
+							<%
+								if (categoryID == cat.getID()) {
+							%>
+							<option selected="selected" value="<%=cat.getID()%>"><%=cat.getName()%></option>
+							<%
+								} else {
+							%>
 							<option value="<%=cat.getID()%>"><%=cat.getName()%></option>
-							<% } %>
-							
 							<%
 								}
 							%>
-							<% if (categoryID == -1) { %>
+
+							<%
+								}
+							%>
+							<%
+								if (categoryID == -1) {
+							%>
 							<option selected="selected" value="-1">All Categories</option>
-							<% } else { %>
-							<option  value="-1">All Categories</option>
-							<% } %>
+							<%
+								} else {
+							%>
+							<option value="-1">All Categories</option>
+							<%
+								}
+							%>
 					</select></td>
 					<td><select name="ageRangeID">
-							<% if (ageRangeID == -1) { %>
+							<%
+								if (ageRangeID == -1) {
+							%>
 							<option selected="selected" value="-1">All Ages</option>
-							<% } else { %>
-							<option  value="-1">All Ages</option>
-							<% } %>
-							<% if (ageRangeID == 1) { %>
-								<option selected="selected" value="1">12-18</option>
-							<% } else { %>
+							<%
+								} else {
+							%>
+							<option value="-1">All Ages</option>
+							<%
+								}
+							%>
+							<%
+								if (ageRangeID == 1) {
+							%>
+							<option selected="selected" value="1">12-18</option>
+							<%
+								} else {
+							%>
 							<option value="1">12-18</option>
-							<% } %>
-							<% if (ageRangeID == 2) { %>
+							<%
+								}
+							%>
+							<%
+								if (ageRangeID == 2) {
+							%>
 							<option selected="selected" value="2">18-45</option>
-							<% } else { %>
+							<%
+								} else {
+							%>
 							<option value="2">18-45</option>
-							<% } %>
-							<% if (ageRangeID == 3) { %>
+							<%
+								}
+							%>
+							<%
+								if (ageRangeID == 3) {
+							%>
 							<option selected="selected" value="3">45-65</option>
-							<% } else { %>
+							<%
+								} else {
+							%>
 							<option value="3">45-65</option>
-							<% } %>
-							<% if (ageRangeID == 4) { %>
+							<%
+								}
+							%>
+							<%
+								if (ageRangeID == 4) {
+							%>
 							<option selected="selected" value="4">65-</option>
-							<% } else { %>
+							<%
+								} else {
+							%>
 							<option value="4">65-</option>
-							<% } %>
-							</select></td>
-					<td><input type="hidden" name="rowOffset" value= "0" />
-					<input type="hidden" name="productOffset" value= "0" />
-					<input type="submit" name="submit" value="Run Query" /></td>
+							<%
+								}
+							%>
+					</select></td>
+					<td><input type="hidden" name="rowOffset" value="0" /> <input
+						type="hidden" name="productOffset" value="0" /> <input
+						type="submit" name="submit" value="Run Query" /></td>
 				</tr>
 			</form>
 
@@ -206,11 +214,17 @@
 
 		<table class="table table-striped">
 			<tr>
-			<% if ("customers".equals(row)) { %>
-							<td>customer/product</td>
-							<% } else { %>
-							<td>State/product</td>
-							<% } %>
+				<%
+					if ("customers".equals(row)) {
+				%>
+				<td>customer/product</td>
+				<%
+					} else {
+				%>
+				<td>State/product</td>
+				<%
+					}
+				%>
 				<%
 					for (int i = 1; i <= numberOfProduct; i++) {
 				%>
@@ -219,45 +233,57 @@
 				<%
 					}
 				%>
-				<td>  
-			<form action="handle_sales_analytics" method="post">
-					<input type="hidden" name="row" value= "<%=row%>" />
-					<input type="hidden" name="state" value= "<%=state%>" />
-					<input type="hidden" name="categoryID" value= "<%=categoryID%>" />
-					<input type="hidden" name="ageRangeID" value= "<%=ageRangeID%>" />
-					<input type="hidden" name="rowOffset" value= "<%=rowOffset%>" />
-					<input type="hidden" name="productOffset" value= "<%=productOffset+10%>" />
-					<input type="submit" name="submit1" value="Get next 10 products >>" />
-					</form></td>
+				<td>
+					<form action="handle_sales_analytics" method="post">
+						<input type="hidden" name="row" value="<%=row%>" /> <input
+							type="hidden" name="state" value="<%=state%>" /> <input
+							type="hidden" name="categoryID" value="<%=categoryID%>" /> <input
+							type="hidden" name="ageRangeID" value="<%=ageRangeID%>" /> <input
+							type="hidden" name="rowOffset" value="<%=rowOffset%>" /> <input
+							type="hidden" name="productOffset" value="<%=productOffset + 10%>" />
+						<input type="submit" name="submit1"
+							value="Get next 10 products >>" />
+					</form>
+				</td>
 			</tr>
 			<%
-				for(int j=numberOfProduct+1;j< tableCellEntry.size();){
+				for (int j = numberOfProduct + 1; j < tableCellEntry.size();) {
 			%>
 			<tr>
 				<td><%=tableCellEntry.get(j).row + "("
 						+ (tableCellEntry.get(j).sales) + ")"%> <%
-					j++;
-					int k=j;
-					for (int i = j; i < k + numberOfProduct && i < tableCellEntry.size(); i++,j++) {
+ 	j++;
+ 		int k = j;
+ 		for (int i = j; i < k + numberOfProduct
+ 				&& i < tableCellEntry.size(); i++, j++) {
+ %>
+				<td><%=tableCellEntry.get(i).sales%></td>
+				<%
+					}
 				%>
-				<td><%=
-						tableCellEntry.get(i).sales%></td>
-				<% 	}
-			%>
 
 			</tr>
-			<% 	}
+			<%
+				}
 			%>
-			<% if(nextRowOffset != 0) {%>
-			<tr><td><form action="handle_sales_analytics" method="post">
-					<input type="hidden" name="row" value= "<%=row%>" />
-					<input type="hidden" name="state" value= "<%=state%>" />
-					<input type="hidden" name="categoryID" value= "<%=categoryID%>" />
-					<input type="hidden" name="ageRangeID" value= "<%=ageRangeID%>" />
-					<input type="hidden" name="rowOffset" value= "<%=nextRowOffset%>" />
-					<input type="hidden" name="productOffset" value= "<%=productOffset%>" />
-			<input type="submit" name="submit2" value="Get next 20 <%=" "+ row +" >>"%> " /></form></td></tr>
-			<%} %>
+			<%
+				if (nextRowOffset != 0) {
+			%>
+			<tr>
+				<td><form action="handle_sales_analytics" method="post">
+						<input type="hidden" name="row" value="<%=row%>" /> <input
+							type="hidden" name="state" value="<%=state%>" /> <input
+							type="hidden" name="categoryID" value="<%=categoryID%>" /> <input
+							type="hidden" name="ageRangeID" value="<%=ageRangeID%>" /> <input
+							type="hidden" name="rowOffset" value="<%=nextRowOffset%>" /> <input
+							type="hidden" name="productOffset" value="<%=productOffset%>" />
+						<input type="submit" name="submit2"
+							value="Get next 20 <%=" " + row + " >>"%> " />
+					</form></td>
+			</tr>
+			<%
+				}
+			%>
 		</table>
 
 	</div>
