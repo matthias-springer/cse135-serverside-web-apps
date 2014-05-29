@@ -88,7 +88,7 @@ RETURN QUERY
 SELECT t.state_name, SUBSTRING(t.product_name from 1 for 10) AS product_name, t.sales
 FROM 
 (
-SELECT CASE WHEN (exist_more_states = 1) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
+SELECT CASE WHEN (exist_more_states = 21) THEN CAST(new_state_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS state_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS state_sort_id, 0 AS product_sort_id
 UNION
 
 (
@@ -102,6 +102,7 @@ from
 	on top20states.name = users.state
 	join sales
 	on (sales.uid = users.id and sales.pid=top10products.id)
+	where (age_rangeid = -1 OR (users.age >= age_lower AND users.age < age_upper))
 	) union
 	(select top20states.name as states_name, top10products.name as product_name, 0 as pricequantity
 	from top20states
