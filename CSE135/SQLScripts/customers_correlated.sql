@@ -81,26 +81,14 @@ RETURN QUERY
 SELECT t.user_name, SUBSTRING(t.product_name from 1 for 10) AS product_name, t.sales
 FROM 
 (
-SELECT CASE WHEN (exist_more_users = 21) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
-UNION ALL
-SELECT U.name AS user_name, P.name AS product_name, ids.sales, 1 AS user_sort_id, 1 AS product_sort_id
-FROM
-(
-SELECT U.id AS uid, P.id AS pid, COALESCE(sum(S.price*S.quantity),0) AS sales
-FROM top20users U
-CROSS JOIN top10products P
-LEFT JOIN sales S
-ON (U.id = S.uid AND P.id = S.pid)
-GROUP BY U.id, P.id
-)AS ids
-JOIN top20users U
-ON U.id = ids.uid
-JOIN top10products P
-ON P.id = ids.pid
-UNION ALL
+SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
+UNION
+SELECT U.name AS user_name, P.name AS product_name, COALESCE((SELECT sum(price*quantity) FROM sales WHERE uid=U.id AND pid=P.id),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
+FROM top20users U, top10products P
+UNION
 SELECT t20u.name AS user_name, 'all' AS product_name, t20u.sales AS sales, t20u.user_sort_id,  t20u.product_sort_id
 FROM top20users t20u
-UNION ALL
+UNION
 SELECT 'all' AS user_name, t10p.name AS product_name, t10p.sales AS sales, t10p.user_sort_id,  t10p.product_sort_id
 FROM top10products t10p
 ) AS t
