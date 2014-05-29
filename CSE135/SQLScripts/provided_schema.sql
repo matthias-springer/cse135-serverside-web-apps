@@ -153,6 +153,6 @@ CREATE INDEX ON users using btree (age);
 CREATE INDEX ON sales using hash (uid);
 CREATE INDEX ON sales using hash (pid);
 CREATE INDEX ON products using hash (id);
-CREATE INDEX ON products using btree (name)
+CREATE INDEX ON products using btree (name);
 CREATE INDEX ON products using hash (cid);
 

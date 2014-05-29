@@ -33,6 +33,24 @@ CREATE TEMP TABLE top10products(
 );
 
 
+/*INSERT INTO top20users
+SELECT top20.*, COALESCE(SUM(sales.price*sales.quantity),0) AS sales, 1 AS user_sort_id, 0 AS product_sort_id
+FROM
+((SELECT U.id, U.name
+FROM users U
+WHERE (state_name = 'all' OR U.state = state_name)
+AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+ORDER BY U.name ASC
+OFFSET customer_offset
+LIMIT 21
+)AS top20
+LEFT JOIN sales
+ON top20.id = sales.uid)
+LEFT JOIN products P
+ON sales.pid = P.id
+WHERE (categoryid = -1 OR P.cid = categoryid)
+GROUP BY top20.id, top20.name;
+*/
 INSERT INTO top20users
 SELECT top20.*, COALESCE(SUM(newProds.price*newProds.quantity),0) AS sales, 1 AS user_sort_id, 0 AS product_sort_id
 FROM
@@ -58,6 +76,24 @@ GET DIAGNOSTICS exist_more_users = ROW_COUNT;
 
 
 
+/*INSERT INTO top10products
+SELECT top10.*, COALESCE(SUM(price*quantity),0) AS sales, 0 AS user_sort_id, 1 AS product_sort_id
+FROM 
+(SELECT P.id, P.name
+FROM products P
+WHERE (categoryid = -1 OR P.cid = categoryid)
+ORDER BY P.name ASC
+OFFSET product_offset
+LIMIT 10
+)AS top10
+LEFT JOIN sales
+ON top10.id = sales.pid
+LEFT JOIN users U
+ON uid = U.id
+WHERE (state_name = 'all' OR U.state = state_name)
+AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+GROUP BY top10.id, top10.name;*/
+
 INSERT INTO top10products
 SELECT top10.*, COALESCE(SUM(newUsers.price*newUsers.quantity),0) AS sales, 0 AS user_sort_id, 1 AS product_sort_id
 FROM 
@@ -79,14 +115,35 @@ AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
 ON top10.id = newUsers.pid
 GROUP BY top10.id, top10.name;
 
+
 RETURN QUERY
 SELECT t.user_name, SUBSTRING(t.product_name from 1 for 10) AS product_name, t.sales
 FROM 
 (
 SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
 UNION
-SELECT U.name AS user_name, P.name AS product_name, COALESCE((SELECT sum(price*quantity) FROM sales WHERE uid=U.id AND pid=P.id),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
-FROM top20users U, top10products P
+
+(
+select bla.user_name, bla.product_name, sum(bla.pricequantity) as sales, 1 AS user_sort_id, 1 AS product_sort_id
+from
+(
+	(select top20users.name as user_name, top10products.name as product_name, price*quantity as pricequantity
+	from top20users
+	cross join top10products
+	join sales
+	on sales.uid=top20users.id and sales.pid=top10products.id
+	) union
+	(select top20users.name as user_name, top10products.name as product_name, 0 as pricequantity
+	from top20users
+	cross join top10products)
+) as bla
+group by bla.user_name, bla.product_name
+)
+
+
+--SELECT U.name AS user_name, P.name AS product_name, COALESCE((SELECT sum(price*quantity) FROM sales WHERE uid=U.id AND pid=P.id),0) AS sales, 1 AS user_sort_id, 1 AS product_sort_id
+--FROM top20users U, top10products P
+
 UNION
 SELECT t20u.name AS user_name, 'all' AS product_name, t20u.sales AS sales, t20u.user_sort_id,  t20u.product_sort_id
 FROM top20users t20u
