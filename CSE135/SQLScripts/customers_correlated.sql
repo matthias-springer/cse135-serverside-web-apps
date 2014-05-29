@@ -56,6 +56,8 @@ GROUP BY top20.id, top20.name;
 
 GET DIAGNOSTICS exist_more_users = ROW_COUNT;
 
+
+
 INSERT INTO top10products
 SELECT top10.*, COALESCE(SUM(newUsers.price*newUsers.quantity),0) AS sales, 0 AS user_sort_id, 1 AS product_sort_id
 FROM 
@@ -92,7 +94,8 @@ UNION
 SELECT 'all' AS user_name, t10p.name AS product_name, t10p.sales AS sales, t10p.user_sort_id,  t10p.product_sort_id
 FROM top10products t10p
 ) AS t
-ORDER BY t.user_sort_id, t.user_name, t.product_sort_id, t.product_name;
+ORDER BY t.user_sort_id, t.user_name, t.product_sort_id, t.product_name
+LIMIT 231;
 
 
 drop table top20users;
