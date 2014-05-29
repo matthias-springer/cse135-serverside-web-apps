@@ -95,7 +95,7 @@ WHERE (categoryid = -1 OR P.cid = categoryid)
 ON top20.id = newProds.uid
 GROUP BY top20.id, top20.name;
 */
-
+	
 GET DIAGNOSTICS exist_more_users = ROW_COUNT;
 
 
@@ -161,7 +161,7 @@ RETURN QUERY
 SELECT t.user_name, SUBSTRING(t.product_name from 1 for 10) AS product_name, t.sales
 FROM 
 (
-SELECT CASE WHEN (exist_more_users = 1) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
+SELECT CASE WHEN (exist_more_users = 21) THEN CAST(new_customer_offset AS TEXT) ELSE CAST(0 AS TEXT) END AS user_name, CAST(new_product_offset AS TEXT) AS product_name, 0 AS sales, 0  AS user_sort_id, 0 AS product_sort_id
 UNION
 
 (
