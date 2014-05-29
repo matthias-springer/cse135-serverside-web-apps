@@ -33,24 +33,47 @@ CREATE TEMP TABLE top10products(
 );
 
 
-/*INSERT INTO top20users
-SELECT top20.*, COALESCE(SUM(sales.price*sales.quantity),0) AS sales, 1 AS user_sort_id, 0 AS product_sort_id
-FROM
-((SELECT U.id, U.name
-FROM users U
-WHERE (state_name = 'all' OR U.state = state_name)
-AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
-ORDER BY U.name ASC
-OFFSET customer_offset
-LIMIT 21
-)AS top20
-LEFT JOIN sales
-ON top20.id = sales.uid)
-LEFT JOIN products P
-ON sales.pid = P.id
-WHERE (categoryid = -1 OR P.cid = categoryid)
-GROUP BY top20.id, top20.name;
-*/
+INSERT INTO top20users
+
+(select bla.id as id, bla.name as name, sum(bla.sales) as sales, 1 AS user_sort_id, 0 AS product_sort_id
+from
+(
+	(SELECT top20.*, COALESCE(SUM(sales.price*sales.quantity),0) AS sales, 1 AS user_sort_id, 0 AS product_sort_id
+	FROM
+	((SELECT U.id, U.name
+	FROM users U
+	WHERE (state_name = 'all' OR U.state = state_name)
+	AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+	ORDER BY U.name ASC
+	OFFSET customer_offset
+	LIMIT 21
+	)AS top20
+	LEFT JOIN sales
+	ON top20.id = sales.uid)
+	LEFT JOIN products P
+	ON sales.pid = P.id
+	WHERE (categoryid = -1 OR P.cid = categoryid)
+	GROUP BY top20.id, top20.name
+	)
+	
+	union
+	
+	((select top20.*, 0 as sales, 1 AS user_sort_id, 0 AS product_sort_id
+	from
+	(SELECT U.id, U.name
+	FROM users U
+	WHERE (state_name = 'all' OR U.state = state_name)
+	AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+	ORDER BY U.name ASC
+	OFFSET customer_offset
+	LIMIT 21
+	)AS top20))
+) as bla
+group by bla.id, bla.name);
+
+
+
+/*
 INSERT INTO top20users
 SELECT top20.*, COALESCE(SUM(newProds.price*newProds.quantity),0) AS sales, 1 AS user_sort_id, 0 AS product_sort_id
 FROM
@@ -71,30 +94,48 @@ WHERE (categoryid = -1 OR P.cid = categoryid)
 )AS newProds
 ON top20.id = newProds.uid
 GROUP BY top20.id, top20.name;
+*/
 
 GET DIAGNOSTICS exist_more_users = ROW_COUNT;
 
 
 
-/*INSERT INTO top10products
-SELECT top10.*, COALESCE(SUM(price*quantity),0) AS sales, 0 AS user_sort_id, 1 AS product_sort_id
-FROM 
-(SELECT P.id, P.name
-FROM products P
-WHERE (categoryid = -1 OR P.cid = categoryid)
-ORDER BY P.name ASC
-OFFSET product_offset
-LIMIT 10
-)AS top10
-LEFT JOIN sales
-ON top10.id = sales.pid
-LEFT JOIN users U
-ON uid = U.id
-WHERE (state_name = 'all' OR U.state = state_name)
-AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
-GROUP BY top10.id, top10.name;*/
-
 INSERT INTO top10products
+
+(select bla.id as id, bla.name as name, sum(bla.sales) as sales, 0 AS user_sort_id, 1 AS product_sort_id
+from
+(
+	(SELECT top10.*, COALESCE(SUM(price*quantity),0) AS sales, 0 AS user_sort_id, 1 AS product_sort_id
+	FROM 
+	(SELECT P.id, P.name
+	FROM products P
+	WHERE (categoryid = -1 OR P.cid = categoryid)
+	ORDER BY P.name ASC
+	OFFSET product_offset
+	LIMIT 10
+	)AS top10
+	LEFT JOIN sales
+	ON top10.id = sales.pid
+	LEFT JOIN users U
+	ON uid = U.id
+	WHERE (state_name = 'all' OR U.state = state_name)
+	AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
+	GROUP BY top10.id, top10.name)
+	union
+	
+	((SELECT top10.*, 0 as SALES, 0 as user_sort_id, 1 as product_sort_id
+	FROM 
+	(SELECT P.id, P.name
+	FROM products P
+	WHERE (categoryid = -1 OR P.cid = categoryid)
+	ORDER BY P.name ASC
+	OFFSET product_offset
+	LIMIT 10
+	) AS top10))
+) as bla
+group by bla.id, bla.name);
+
+/*INSERT INTO top10products
 SELECT top10.*, COALESCE(SUM(newUsers.price*newUsers.quantity),0) AS sales, 0 AS user_sort_id, 1 AS product_sort_id
 FROM 
 (SELECT P.id, P.name
@@ -113,7 +154,7 @@ WHERE (state_name = 'all' OR U.state = state_name)
 AND (age_rangeid = -1 OR (U.age >= age_lower AND U.age < age_upper))
 )AS newUsers
 ON top10.id = newUsers.pid
-GROUP BY top10.id, top10.name;
+GROUP BY top10.id, top10.name;*/
 
 
 RETURN QUERY
