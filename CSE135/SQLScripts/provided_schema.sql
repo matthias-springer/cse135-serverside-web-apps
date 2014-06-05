@@ -148,11 +148,53 @@ INSERT INTO states (id,name,abbreviation) VALUES ('50','Wisconsin','WI');
 INSERT INTO states (id,name,abbreviation) VALUES ('51','Wyoming','WY');
 SELECT * FROM states order by id asc;
 
-CREATE INDEX ON users using hash (state);
-CREATE INDEX ON users using btree (age);
-CREATE INDEX ON sales using hash (uid);
-CREATE INDEX ON sales using hash (pid);
-CREATE INDEX ON products using hash (id);
-CREATE INDEX ON products using btree (name);
-CREATE INDEX ON products using hash (cid);
+CREATE TABLE pre_customers_cat
+(
+	uid integer NOT NULL,
+	cid integer NOT NULL,
+	sales integer NOT NULL,
+	state text NOT NULL
+);
 
+CREATE TABLE pre_customers
+(
+	uid integer NOT NULL,
+	sales integer NOT NULL,
+	state text NOT NULL
+);
+
+CREATE TABLE pre_states
+(
+	state text NOT NULL,
+	cid integer NOT NULL,
+	sales integer NOT NULL
+);
+
+CREATE TABLE pre_products
+(
+	pid integer NOT NULL,
+	state text NOT NULL,
+	sales integer NOT NULL,
+	cid integer NOT NULL
+);
+
+CREATE TABLE pre_customers_products
+(
+	uid integer NOT NULL,
+	pid integer NOT NULL,
+	sales integer NOT NULL
+);
+
+CREATE INDEX ON pre_customers_cat USING hash (uid);
+CREATE INDEX ON pre_customers_cat USING btree (sales);
+CREATE INDEX ON pre_customers USING hash (uid);
+CREATE INDEX ON pre_customers USING btree (sales);
+CREATE INDEX ON pre_states USING hash (state);
+CREATE INDEX ON pre_states USING btree (sales);
+CREATE INDEX ON pre_products USING hash (pid);
+CREATE INDEX ON pre_products USING btree (sales);
+CREATE INDEX ON pre_products USING hash (state);
+
+-- TODO: do we need these two?
+CREATE INDEX ON pre_customers_products USING hash (uid);
+CREATE INDEX ON pre_customers_products USING hash (pid);
