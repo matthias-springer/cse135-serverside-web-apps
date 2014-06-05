@@ -198,3 +198,43 @@ CREATE INDEX ON pre_products USING hash (state);
 -- TODO: do we need these two?
 CREATE INDEX ON pre_customers_products USING hash (uid);
 CREATE INDEX ON pre_customers_products USING hash (pid);
+
+-- Populating the precomputed tables efficiently ; using one another..
+
+--(uid,cid,state,sales)
+INSERT INTO pre_customers_cat(uid,state,cid,sales)
+SELECT U.id, U.state, P.cid, SUM(S.quantity*S.price)
+FROM users U
+JOIN sales S
+ON U.id = S.uid
+JOIN products P
+ON S.pid = P.id
+GROUP BY U.id,U.state,P.cid
+
+--(uid,state,sales)
+INSERT INTO pre_customers(uid,state,sales)
+SELECT T.uid, T.state, SUM(T.sales)
+FROM pre_customers_cat T
+GROUP BY T.uid, T.state
+
+--(pid,state,cid,sales)
+INSERT INTO pre_products(pid,state,cid,sales)
+SELECT P.id, U.state, P.cid, SUM(S.quantity*S.price)
+FROM users U
+JOIN sales S
+ON U.id = S.uid
+JOIN products P
+ON S.pid = P.id
+GROUP BY P.id, U.state, P.cid
+
+--(stateid,cid,sales) ; could have aggregated from pre_customers_cat but used pre_products insteaed because there are less products than users
+INSERT INTO pre_states(state,cid,sales)
+SELECT T.state, T.cid, SUM(T.sales)
+FROM pre_products T
+GROUP BY T.state, T.cid
+
+--(uid,pid,sales)
+INSERT INTO pre_customers_products(uid,pid,sales)
+SELECT S.uid, S.pid, SUM(S.quantity*S.price)
+FROM sales S
+GROUP BY S.uid, S.pid
