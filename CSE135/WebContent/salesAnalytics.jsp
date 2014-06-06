@@ -34,36 +34,20 @@
 		String row = "customers";
 		String state = "all";
 		int categoryID = -1;
-		int ageRangeID = -1;
-		int rowOffset = 0;
-		int productOffset = 0;
+		int numberOfProduct = 0;
 		List<AnalyticsTableEntry> tableCellEntry;
 		if (request.getParameter("state") != null) {
 			row = request.getParameter("row");
 			state = request.getParameter("state");
 			categoryID = Integer.parseInt(request
 					.getParameter("categoryID"));
-			ageRangeID = Integer.parseInt(request
-					.getParameter("ageRangeID"));
-			rowOffset = Integer.parseInt(request.getParameter("rowOffset"));
-			productOffset = Integer.parseInt(request
-					.getParameter("productOffset"));
 		}
 		if ("customers".equals(row)) {
 			tableCellEntry = AnalyticsTableEntry
-					.getCustomerSalesAnalyticsDataFromDatabase(
-							productOffset, rowOffset, state, categoryID,
-							ageRangeID);
+					.getCustomerSalesAnalyticsDataFromDatabase( state, categoryID);
 		} else {
-			tableCellEntry = AnalyticsTableEntry
-					.getStatesSalesAnalyticsDataFromDatabase(productOffset,
-							rowOffset,state, categoryID, ageRangeID);
+			tableCellEntry = AnalyticsTableEntry.getStatesSalesAnalyticsDataFromDatabase(state, categoryID);
 		}
-
-		int nextRowOffset = Integer.parseInt(tableCellEntry.get(0).row);
-		int nextProdcutOffset = Integer
-				.parseInt(tableCellEntry.get(0).product);
-		int numberOfProduct = 0;
 		for (AnalyticsTableEntry entry : tableCellEntry) {
 			if ("all".equals(entry.row)) {
 				numberOfProduct++;
@@ -73,7 +57,7 @@
 
 	<h1>Select your filters and submit</h1>
 
-	<div id="filters" style="width: 100%; float: left; <%= productOffset > 0 || rowOffset > 0 ? "visibility: hidden" : "" %>" >
+	<div id="filters" style="width: 100%; float: left;" >
 
 		<table class="table table-striped">
 			<form action="handle_sales_analytics" method="post">
@@ -81,7 +65,6 @@
 					<td>Row selection</td>
 					<td>State</td>
 					<td>Product Category</td>
-					<td>Age</td>
 					<td>Submit Button</td>
 				</tr>
 				<tr>
@@ -144,65 +127,7 @@
 								}
 							%>
 					</select></td>
-					<td><select name="ageRangeID">
-							<%
-								if (ageRangeID == -1) {
-							%>
-							<option selected="selected" value="-1">All Ages</option>
-							<%
-								} else {
-							%>
-							<option value="-1">All Ages</option>
-							<%
-								}
-							%>
-							<%
-								if (ageRangeID == 1) {
-							%>
-							<option selected="selected" value="1">12-18</option>
-							<%
-								} else {
-							%>
-							<option value="1">12-18</option>
-							<%
-								}
-							%>
-							<%
-								if (ageRangeID == 2) {
-							%>
-							<option selected="selected" value="2">18-45</option>
-							<%
-								} else {
-							%>
-							<option value="2">18-45</option>
-							<%
-								}
-							%>
-							<%
-								if (ageRangeID == 3) {
-							%>
-							<option selected="selected" value="3">45-65</option>
-							<%
-								} else {
-							%>
-							<option value="3">45-65</option>
-							<%
-								}
-							%>
-							<%
-								if (ageRangeID == 4) {
-							%>
-							<option selected="selected" value="4">65-</option>
-							<%
-								} else {
-							%>
-							<option value="4">65-</option>
-							<%
-								}
-							%>
-					</select></td>
-					<td><input type="hidden" name="rowOffset" value="0" /> <input
-						type="hidden" name="productOffset" value="0" /> <input
+					<td> <input
 						type="submit" name="submit" value="Run Query" /></td>
 				</tr>
 			</form>
@@ -227,60 +152,30 @@
 					}
 				%>
 				<%
-					for (int i = 1; i <= numberOfProduct; i++) {
+					for (int i = 0; i < numberOfProduct; i++) {
 				%>
 				<td><b><%=tableCellEntry.get(i).product + " ("
 						+ (tableCellEntry.get(i).sales) + ")"%></b></td>
 				<%
 					}
 				%>
-				<td>
-					<form action="handle_sales_analytics" method="post">
-						<input type="hidden" name="row" value="<%=row%>" /> <input
-							type="hidden" name="state" value="<%=state%>" /> <input
-							type="hidden" name="categoryID" value="<%=categoryID%>" /> <input
-							type="hidden" name="ageRangeID" value="<%=ageRangeID%>" /> <input
-							type="hidden" name="rowOffset" value="<%=rowOffset%>" /> <input
-							type="hidden" name="productOffset" value="<%=productOffset + 10%>" />
-						<input type="submit" name="submit1"
-							value="Get next 10 products >>" />
-					</form>
-				</td>
 			</tr>
 			<%
-				for (int j = numberOfProduct + 1; j < tableCellEntry.size();) {
+				for (int j = numberOfProduct; j < tableCellEntry.size();) {
 			%>
 			<tr>
 				<td><b><%=tableCellEntry.get(j).row + " ("
-						+ (tableCellEntry.get(j).sales) + ")"%> <%
- 	j++;
- 		int k = j;
- 		for (int i = j; i < k + numberOfProduct
- 				&& i < tableCellEntry.size(); i++, j++) {
- %>
-				<td><%=tableCellEntry.get(i).sales%></b></td>
+						+ (tableCellEntry.get(j).sales) + ")"%></b></td> <%
+ 				j++;
+			 				int k = j;
+			 		for (int i = j; i < k + numberOfProduct
+ 							&& i < tableCellEntry.size(); i++, j++) {
+				 %>
+				<td><b><%=tableCellEntry.get(i).sales%></b></td>
 				<%
 					}
 				%>
 
-			</tr>
-			<%
-				}
-			%>
-			<%
-				if (nextRowOffset != 0) {
-			%>
-			<tr>
-				<td><form action="handle_sales_analytics" method="post">
-						<input type="hidden" name="row" value="<%=row%>" /> <input
-							type="hidden" name="state" value="<%=state%>" /> <input
-							type="hidden" name="categoryID" value="<%=categoryID%>" /> <input
-							type="hidden" name="ageRangeID" value="<%=ageRangeID%>" /> <input
-							type="hidden" name="rowOffset" value="<%=nextRowOffset%>" /> <input
-							type="hidden" name="productOffset" value="<%=productOffset%>" />
-						<input type="submit" name="submit2"
-							value="Get next 20 <%=" " + row + " >>"%> " />
-					</form></td>
 			</tr>
 			<%
 				}
