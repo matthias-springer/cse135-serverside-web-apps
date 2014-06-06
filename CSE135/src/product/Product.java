@@ -208,6 +208,7 @@ public class Product {
 			// Release resources in a finally block in reverse-order of
 			// their creation
 
+			
 			if (rs != null) {
 				try {
 					rs.close();

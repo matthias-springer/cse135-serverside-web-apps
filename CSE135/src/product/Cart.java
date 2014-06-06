@@ -21,8 +21,8 @@ public class Cart {
 		return cart;
 	}
 
-	public Float getTotal() {
-		float total = 0;
+	public Integer getTotal() {
+		Integer total = 0;
 
 		for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
 			total += entry.getValue()
@@ -72,7 +72,7 @@ public class Cart {
 			// Create the statement
 
 			PreparedStatement statement1 = conn
-					.prepareStatement("SELECT * FROM insert_sales(?, ?, ?, ?, ?);");
+					.prepareStatement("SELECT * FROM insert_sales(?, ?, ?, ?, ?, ?);");
 			statement1.setInt(1, userid);
 			statement1.setString(5, state);
 			

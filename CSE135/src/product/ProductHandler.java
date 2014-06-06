@@ -46,6 +46,7 @@ public class ProductHandler extends HttpServlet {
 				pr.setCategory(category);
 				pr.setPrice(price);
 
+				
 				if (!isAdmin || !pr.save()) {
 					error = "Update of product " + ID + " (" + name
 							+ ") failed!";

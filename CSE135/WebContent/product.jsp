@@ -112,7 +112,7 @@
 							<% } %>
 							<% } %>
 					</select></td>
-					<td><input <%= !isAdmin ? "readonly=\"readonly\"" : "" %> type="text" name="price" value="<%=new Float(pr.getPrice()).toString()%>" /></td>
+					<td><input <%= !isAdmin ? "readonly=\"readonly\"" : "" %> type="text" name="price" value="<%=new Integer(pr.getPrice()).toString()%>" /></td>
 					<td>
 						<% if (isAdmin) { %>
 							<input type="submit" name="type" value="Update" />

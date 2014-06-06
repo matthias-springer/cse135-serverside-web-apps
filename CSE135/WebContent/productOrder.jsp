@@ -131,6 +131,7 @@
 				// shopping cart page
 	%>
 
+
 	<script>
 		function ccn_changed() {
 			document.getElementById("purchase").disabled = document.getElementById("ccn").value == "";

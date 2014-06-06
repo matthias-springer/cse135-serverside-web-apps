@@ -33,10 +33,16 @@ public class ProductOrderHandler extends HttpServlet {
 				else if(request.getParameter("type").equals("Update"))
 					cart.updateCart(Integer.parseInt(request.getParameter("ID")), Integer.parseInt(request.getParameter("quantity")));
 				else if (request.getParameter("type").equals("Purchase")) {
-					cart.save(((User) session.getAttribute("user")).getID(), ((User) session.getAttribute("user")).getState());
+					System.out.println(((User) session.getAttribute("user")));
+					
+					int u_id = ((User) session.getAttribute("user")).getID();
+					String u_state = ((User) session.getAttribute("user")).getState();
+					
+					cart.save(u_id, u_state);
 					response.sendRedirect("productOrder.jsp?pageType=2");
 					return;
 				}
+				
 				
 				session.setAttribute("cart", cart);
 				response.sendRedirect("product.jsp?pagetype=browsing");
