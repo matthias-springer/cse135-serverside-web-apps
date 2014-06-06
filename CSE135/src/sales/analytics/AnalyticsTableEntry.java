@@ -54,36 +54,78 @@ public class AnalyticsTableEntry {
 
 			while (rs.next()) {
 				AnalyticsTableEntry entry = new AnalyticsTableEntry(
-						rs.getString("user_name"),
-						"all", rs.getInt("sales"));
+						rs.getString("user_name"), "all", rs.getInt("sales"));
 				customerData.add(entry);
 			}
+
+			int userCount = customerData.size();
+			if (userCount < 20) {
+				String queryString = addMoreUsersWithZeroSalesFigure(
+						20 - userCount, state);
+
+				stmt.execute(queryString);
+				rs = stmt
+						.executeQuery("select u.name as user_name, ut.sales from user_temp ut join users u on (u.id = ut.uid) order by sales desc offset "
+								+ userCount);
+
+				while (rs.next()) {
+					AnalyticsTableEntry entry = new AnalyticsTableEntry(
+							rs.getString("user_name"), "all",
+							rs.getInt("sales"));
+					customerData.add(entry);
+				}
+			}
+
 			stmt.execute("CREATE TEMP TABLE product_temp (pid int, sales int) ON COMMIT DELETE ROWS;");
 			stmt.execute(queryForProductAggregatedData);
-			rs = stmt.executeQuery("select p.name as product_name, pt.sales   from product_temp pt join products p on (p.id = pt.pid) order by pt.sales desc ");
+			rs = stmt
+					.executeQuery("select p.name as product_name, pt.sales   from product_temp pt join products p on (p.id = pt.pid) order by pt.sales desc ");
 
 			while (rs.next()) {
-				AnalyticsTableEntry entry = new AnalyticsTableEntry("all", rs.getString("product_name") ,rs.getInt("sales"));
+				AnalyticsTableEntry entry = new AnalyticsTableEntry("all",
+						rs.getString("product_name"), rs.getInt("sales"));
 				productData.add(entry);
 			}
 
+			int productCount = productData.size();
+			if (productCount < 10) {
+				String queryString = addMoreProductWithZeroSalesFigure(
+						10 - productCount, categoryID);
+
+				stmt.execute(queryString);
+				rs = stmt
+						.executeQuery("select p.name as product_name, pt.sales   from product_temp pt join products p on (p.id = pt.pid) order by pt.sales desc offset "
+								+ productCount);
+
+				while (rs.next()) {
+					AnalyticsTableEntry entry = new AnalyticsTableEntry(
+							"all", rs.getString("product_name"),
+							rs.getInt("sales"));
+					productData.add(entry);
+				}
+			}
+			
 			rs = stmt.executeQuery(queryForCustomerProductData);
 			while (rs.next()) {
-				AnalyticsTableEntry entry = new AnalyticsTableEntry(rs.getString("user_name"), rs.getString("product_name") ,rs.getInt("sales"));
+				AnalyticsTableEntry entry = new AnalyticsTableEntry(
+						rs.getString("user_name"),
+						rs.getString("product_name"), rs.getInt("sales"));
 				customerProductData.add(entry);
 			}
+
+			
 			
 			result.addAll(productData);
 			int numOfProducts = productData.size();
-			int count =0;
-			for(AnalyticsTableEntry customerEntry : customerData){
+			int count = 0;
+			for (AnalyticsTableEntry customerEntry : customerData) {
 				result.add(customerEntry);
-				for(int i=0; i < numOfProducts; i++){
+				for (int i = 0; i < numOfProducts; i++) {
 					result.add(customerProductData.get(count));
 					count++;
 				}
 			}
-			
+
 			conn.commit();
 			conn.setAutoCommit(true);
 			conn.close();
@@ -120,9 +162,36 @@ public class AnalyticsTableEntry {
 		return result;
 	}
 
+	private static String addMoreProductWithZeroSalesFigure(int count,
+			int categoryID) {
+
+		String queryString = null;
+		if (categoryID == -1) {
+			queryString = "insert into product_temp select p.id, 0 from products p where p.id not in (select t.pid from product_temp t ) limit "
+					+ count;
+		} else {
+			queryString = "insert into product_temp select p.id, 0 from products p where p.id not in (select t.pid from product_temp t ) and p.cid="
+					+ categoryID + " limit " + count;
+		}
+		return queryString;
+	}
+
+	private static String addMoreUsersWithZeroSalesFigure(int count,
+			String state) {
+
+		String queryString = null;
+		if ("all".equals(state)) {
+			queryString = "insert into user_temp select u.id, 0 from users u where u.id not in (select t.uid from user_temp t ) limit "
+					+ count;
+		} else {
+			queryString = "insert into user_temp select u.id, 0 from users u where u.id not in (select t.uid from user_temp t ) and u.state='"
+					+ state + "' limit " + count;
+		}
+		return queryString;
+	}
 
 	public static List<AnalyticsTableEntry> getStatesSalesAnalyticsDataFromDatabase(
-String state, int categoryID) {
+			String state, int categoryID) {
 
 		List<AnalyticsTableEntry> result = new ArrayList<AnalyticsTableEntry>();
 		List<AnalyticsTableEntry> stateData = new ArrayList<AnalyticsTableEntry>();
@@ -132,8 +201,8 @@ String state, int categoryID) {
 				state, categoryID);
 		String queryForProductAggregatedData = getQueryForProductAggregatedData(
 				state, categoryID);
-		String queryForStateProductData = getQueryForStateProductData(
-				state, categoryID);
+		String queryForStateProductData = getQueryForStateProductData(state,
+				categoryID);
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -152,36 +221,85 @@ String state, int categoryID) {
 
 			while (rs.next()) {
 				AnalyticsTableEntry entry = new AnalyticsTableEntry(
-						rs.getString("state"),
-						"all", rs.getInt("sales"));
+						rs.getString("state"), "all", rs.getInt("sales"));
 				stateData.add(entry);
 			}
+			
+			
+			
+			int stateCount = stateData.size();
+			if (stateCount < 20) {
+				String queryString = addMoreStatesWithZeroSalesFigure(
+						20 - stateCount, state);
+
+				stmt.execute(queryString);
+				rs = stmt
+						.executeQuery("select st.state, st.sales from state_temp st order by st.sales desc offset "
+								+ stateCount);
+
+				while (rs.next()) {
+					AnalyticsTableEntry entry = new AnalyticsTableEntry(
+							rs.getString("state"), "all",
+							rs.getInt("sales"));
+					stateData.add(entry);
+				}
+			}
+			
+			
 			stmt.execute("CREATE TEMP TABLE product_temp (pid int, sales int) ON COMMIT DELETE ROWS;");
 			stmt.execute(queryForProductAggregatedData);
-			rs = stmt.executeQuery("select p.name as product_name, pt.sales   from product_temp pt join products p on (p.id = pt.pid) order by pt.sales desc ");
+			rs = stmt
+					.executeQuery("select p.name as product_name, pt.sales   from product_temp pt join products p on (p.id = pt.pid) order by pt.sales desc ");
 
 			while (rs.next()) {
-				AnalyticsTableEntry entry = new AnalyticsTableEntry("all", rs.getString("product_name") ,rs.getInt("sales"));
+				AnalyticsTableEntry entry = new AnalyticsTableEntry("all",
+						rs.getString("product_name"), rs.getInt("sales"));
 				productData.add(entry);
 			}
+			
+			
+
+			int productCount = productData.size();
+			if (productCount < 10) {
+				String queryString = addMoreProductWithZeroSalesFigure(
+						10 - productCount, categoryID);
+
+				stmt.execute(queryString);
+				rs = stmt
+						.executeQuery("select p.name as product_name, pt.sales   from product_temp pt join products p on (p.id = pt.pid) order by pt.sales desc offset "
+								+ productCount);
+
+				while (rs.next()) {
+					AnalyticsTableEntry entry = new AnalyticsTableEntry(
+							"all", rs.getString("product_name"),
+							rs.getInt("sales"));
+					productData.add(entry);
+				}
+			}
+			
 
 			rs = stmt.executeQuery(queryForStateProductData);
 			while (rs.next()) {
-				AnalyticsTableEntry entry = new AnalyticsTableEntry(rs.getString("state"), rs.getString("product_name") ,rs.getInt("sales"));
+				AnalyticsTableEntry entry = new AnalyticsTableEntry(
+						rs.getString("state"), rs.getString("product_name"),
+						rs.getInt("sales"));
 				stateProductData.add(entry);
 			}
 			
+			
+			
+
 			result.addAll(productData);
 			int numOfProducts = productData.size();
-			int count =0;
-			for(AnalyticsTableEntry customerEntry : stateData){
+			int count = 0;
+			for (AnalyticsTableEntry customerEntry : stateData) {
 				result.add(customerEntry);
-				for(int i=0; i < numOfProducts; i++){
+				for (int i = 0; i < numOfProducts; i++) {
 					result.add(stateProductData.get(count));
 					count++;
 				}
 			}
-			
+
 			conn.commit();
 			conn.setAutoCommit(true);
 			conn.close();
@@ -218,78 +336,110 @@ String state, int categoryID) {
 		return result;
 	}
 
-	
+	private static String addMoreStatesWithZeroSalesFigure(int count, String state) {
+		String queryString = null;
+		if ("all".equals(state)) {
+			queryString = "insert into state_temp select s.name, 0 from states s where s.name not in (select t.state from state_temp t ) limit "
+					+ count;
+		} else {
+			queryString = "insert into state_temp select s.name, 0 from states s where s.name not in (select t.state from state_temp t ) and s.name='"
+					+ state + "' limit " + count;
+		}
+		return queryString;
+	}
+
 	private static String getQueryForCustomerAggregatedData(String state,
 			int categoryID) {
-		String queryString = null ;
-		
-		if("all".equals(state) && categoryID == -1){
-			 queryString = "insert into user_temp select uid, sales as sales_sum from pre_customers order by sales desc limit 20";
-		}else if("all".equals(state) && categoryID != -1){
-			 queryString = "insert into user_temp select uid, sales from pre_customers_cat where cid= "+  categoryID + "  order by sales desc limit 20";
-		}else if(! "all".equals(state) && categoryID == -1){
-			queryString = "insert into user_temp select uid, sales from pre_customers where  state='"+state+"' order by sales desc limit 20";
-		}else{
-			queryString = "insert into user_temp select uid, sales from pre_customers_cat where cid= "+ categoryID+"  and state='"+state+"' order by sales desc limit 20";
-		}	
+		String queryString = null;
+
+		if ("all".equals(state) && categoryID == -1) {
+			queryString = "insert into user_temp select uid, sales as sales_sum from pre_customers order by sales desc limit 20";
+		} else if ("all".equals(state) && categoryID != -1) {
+			queryString = "insert into user_temp select uid, sales from pre_customers_cat where cid= "
+					+ categoryID + "  order by sales desc limit 20";
+		} else if (!"all".equals(state) && categoryID == -1) {
+			queryString = "insert into user_temp select uid, sales from pre_customers where  state='"
+					+ state + "' order by sales desc limit 20";
+		} else {
+			queryString = "insert into user_temp select uid, sales from pre_customers_cat where cid= "
+					+ categoryID
+					+ "  and state='"
+					+ state
+					+ "' order by sales desc limit 20";
+		}
 		return queryString;
 	}
 
 	private static String getQueryForCustomerProductData(String state,
 			int categoryID) {
-	String queryString = "select utpt.user_name, utpt.product_name, coalesce(pcp.sales,0) as sales " +
-			" from (select ut.uid, u.name as user_name, pt.pid , p.name as product_name , ut.sales as user_sales, pt.sales as product_sales " + 
-			" from user_temp ut cross join product_temp pt "+
-			" join users u on (u.id = ut.uid) " +
-			" join products p on (p.id=pt.pid) " +
-			" ) as utpt " +
-			" left join pre_customers_products pcp  on (pcp.uid=utpt.uid and pcp.pid= utpt.pid) " +
-			" order by utpt.user_sales desc , utpt.product_sales desc;" ;
-	return queryString;
+		String queryString = "select utpt.user_name, utpt.product_name, coalesce(pcp.sales,0) as sales "
+				+ " from (select ut.uid, u.name as user_name, pt.pid , p.name as product_name , ut.sales as user_sales, pt.sales as product_sales "
+				+ " from user_temp ut cross join product_temp pt "
+				+ " join users u on (u.id = ut.uid) "
+				+ " join products p on (p.id=pt.pid) "
+				+ " ) as utpt "
+				+ " left join pre_customers_products pcp  on (pcp.uid=utpt.uid and pcp.pid= utpt.pid) "
+				+ " order by utpt.user_sales desc , utpt.product_sales desc;";
+		return queryString;
 	}
 
 	private static String getQueryForProductAggregatedData(String state,
 			int categoryID) {
-		String queryString = null ;
-		if("all".equals(state) && categoryID == -1){
+		String queryString = null;
+		if ("all".equals(state) && categoryID == -1) {
 			queryString = "insert into product_temp select pid, sum(sales) as sales_sum from pre_products group by pid order by sales_sum desc limit 10";
-		}else if("all".equals(state) && categoryID != -1){
-			 queryString = "insert into product_temp select pid, sum(sales) as sales_sum from pre_products where  cid= "+categoryID+" group by pid order by sales_sum desc limit 10";
-		}else if(! "all".equals(state) && categoryID == -1){
-			queryString = "insert into product_temp select pid, sales as sales_sum from pre_products where   state='"+state+"' order by sales desc limit 10";
-		}else{
-			queryString = "insert into product_temp select pid, sales from pre_products where  cid= "+categoryID +" and state='"+state+"' order by sales desc limit 10";
-		}	
+		} else if ("all".equals(state) && categoryID != -1) {
+			queryString = "insert into product_temp select pid, sum(sales) as sales_sum from pre_products where  cid= "
+					+ categoryID
+					+ " group by pid order by sales_sum desc limit 10";
+		} else if (!"all".equals(state) && categoryID == -1) {
+			queryString = "insert into product_temp select pid, sales as sales_sum from pre_products where   state='"
+					+ state + "' order by sales desc limit 10";
+		} else {
+			queryString = "insert into product_temp select pid, sales from pre_products where  cid= "
+					+ categoryID
+					+ " and state='"
+					+ state
+					+ "' order by sales desc limit 10";
+		}
 		return queryString;
 	}
-	
+
 	private static String getQueryForStateProductData(String state,
 			int categoryID) {
-		String queryString = " select stpt.state, stpt.product_name, coalesce(pp.sales,0) as sales " + 
-				" from " +
-				"(select st.state, pt.pid , p.name as product_name , st.sales as state_sales, pt.sales " + " as product_sales " 
-				+ " from state_temp st cross join product_temp pt " 
-				+ " join products p on (p.id=pt.pid) " 
-				+ " ) as stpt " 
-				+ " left join pre_products pp  on (pp.state=stpt.state and pp.pid= stpt.pid) " 
+		String queryString = " select stpt.state, stpt.product_name, coalesce(pp.sales,0) as sales "
+				+ " from "
+				+ "(select st.state, pt.pid , p.name as product_name , st.sales as state_sales, pt.sales "
+				+ " as product_sales "
+				+ " from state_temp st cross join product_temp pt "
+				+ " join products p on (p.id=pt.pid) "
+				+ " ) as stpt "
+				+ " left join pre_products pp  on (pp.state=stpt.state and pp.pid= stpt.pid) "
 				+ " order by stpt.state_sales desc , stpt.product_sales desc";
-		
+
 		return queryString;
 	}
 
 	private static String getQueryForStateAggregatedData(String state,
 			int categoryID) {
-		String queryString = null ;
-		if("all".equals(state) && categoryID == -1){
+		String queryString = null;
+		if ("all".equals(state) && categoryID == -1) {
 			queryString = "insert into state_temp select state, sum(sales) as sales_sum from pre_states group by state"
-					+" order by sales_sum desc limit 20";
-		}else if("all".equals(state) && categoryID != -1){
-			 queryString = "insert into state_temp select state, sales from pre_states where cid= "+categoryID + "  order by sales desc limit 20";
-		}else if(! "all".equals(state) && categoryID == -1){
-			queryString = "insert into state_temp select state, sum(sales) as sales_sum from pre_states where state='"+state+"'  group by state order by sales_sum desc limit 20";
-		}else{
-			queryString = "insert into state_temp select state, sales from pre_states where cid= "+ categoryID+" and state='"+state+"' order by sales desc limit 20";
-		}	
+					+ " order by sales_sum desc limit 20";
+		} else if ("all".equals(state) && categoryID != -1) {
+			queryString = "insert into state_temp select state, sales from pre_states where cid= "
+					+ categoryID + "  order by sales desc limit 20";
+		} else if (!"all".equals(state) && categoryID == -1) {
+			queryString = "insert into state_temp select state, sum(sales) as sales_sum from pre_states where state='"
+					+ state
+					+ "'  group by state order by sales_sum desc limit 20";
+		} else {
+			queryString = "insert into state_temp select state, sales from pre_states where cid= "
+					+ categoryID
+					+ " and state='"
+					+ state
+					+ "' order by sales desc limit 20";
+		}
 		return queryString;
 	}
 
