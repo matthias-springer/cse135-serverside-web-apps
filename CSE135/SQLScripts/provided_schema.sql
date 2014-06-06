@@ -4,6 +4,11 @@ DROP TABLE products CASCADE;
 DROP TABLE sales CASCADE;
 DROP TABLE agerange CASCADE;
 DROP TABLE states CASCADE;
+DROP TABLE pre_customers_cat CASCADE;
+DROP TABLE pre_customers CASCADE;
+DROP TABLE pre_states CASCADE;
+DROP TABLE pre_products CASCADE;
+DROP TABLE pre_customers_products CASCADE;
 
 CREATE TABLE users (
    id          SERIAL PRIMARY KEY,
@@ -198,3 +203,5 @@ CREATE INDEX ON pre_products USING hash (state);
 -- TODO: do we need these two?
 CREATE INDEX ON pre_customers_products USING hash (uid);
 CREATE INDEX ON pre_customers_products USING hash (pid);
+
+

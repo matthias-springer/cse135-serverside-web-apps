@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import connection.ConnectToDB;
+
 /**
  * # of users 		
  * # of categories 	
@@ -32,15 +34,15 @@ public class DataGeneratorBulk
 	public static void main(String[] args) throws Exception
 	{
 
-		int Num_users		=	1000000; //100
-		int Num_categories	=	200;  //10
-		int Num_products	=	100000;//1000
-		int Num_sales		=	1000000;//10000
+		int Num_users		=	100; //100
+		int Num_categories	=	50;  //10
+		int Num_products	=	1000;//1000
+		int Num_sales		=	10000;//10000
 		
-		 String  usersPath		=	"/Users/aditya/CSE135/users.txt",
-	    		 categoriesPath	=	"/Users/aditya/CSE135/categories.txt",
-	    		 productsPath	=	"/Users/aditya/CSE135/products.txt",
-	     		 salesPath		=	"/Users/aditya/CSE135/sales.txt";
+		 String  usersPath		=	"C:\\Temp\\users.txt",
+	    		 categoriesPath	=	"C:\\Temp\\categories.txt",
+	    		 productsPath	=	"C:\\Temp\\products.txt",
+	     		 salesPath		=	"C:\\Temp\\sales.txt";
 		
 		DataGeneratorBulk dg=new DataGeneratorBulk();
 		dg.createData(usersPath, categoriesPath, productsPath, salesPath, Num_users,Num_categories,Num_products,Num_sales);
@@ -84,7 +86,7 @@ public class DataGeneratorBulk
 	    String url="jdbc:postgresql://localhost/CSE135DB"; //database name
 	    String user="postgres";							 //username
 	    String password="postgres";						//password
-	    conn=DriverManager.getConnection(url, user, password);
+	    conn=DriverManager.getConnection(ConnectToDB.getConnectionString());
 	    stmt=conn.createStatement();
 	    return true;
 	    }

@@ -37,7 +37,7 @@ public class ProductHandler extends HttpServlet {
 			String SKU = request.getParameter("SKU");
 			Integer category = Integer.parseInt(request
 					.getParameter("category"));
-			Float price = Float.parseFloat(request.getParameter("price"));
+			Integer price = Integer.parseInt(request.getParameter("price"));
 
 			if (request.getParameter("type").equals("Update")) {
 				Product pr = Product.findProductByID(ID);

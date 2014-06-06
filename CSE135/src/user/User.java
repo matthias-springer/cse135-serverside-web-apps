@@ -22,6 +22,10 @@ public class User {
 		return role.equals("owner");
 	}
 	
+	public String getState() {
+		return state;
+	}
+	
 	public User(int ID, String name, int age, String state, String role) {
 		this.ID = ID;
 		this.name = name;

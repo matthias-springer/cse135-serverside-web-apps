@@ -22,9 +22,9 @@ public class Product {
 	
 	private Integer category;
 	
-	private float price;
+	private int price;
 	
-	public Product(Integer ID, String name, String SKU, Integer category, float price) {
+	public Product(Integer ID, String name, String SKU, Integer category, int price) {
 		this.ID = ID;
 		this.setName(name);
 		this.setSKU(SKU);
@@ -32,7 +32,7 @@ public class Product {
 		this.setPrice(price);
 	}
 	
-	public Product(String name, String SKU, Integer category, float price) {
+	public Product(String name, String SKU, Integer category, int price) {
 		this.ID = -1;
 		this.setName(name);
 		this.setSKU(SKU);
@@ -64,11 +64,11 @@ public class Product {
 		this.category = category;
 	}
 
-	public float getPrice() {
+	public int getPrice() {
 		return price;
 	}
 
-	public void setPrice(float price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 	
@@ -109,7 +109,7 @@ public class Product {
 			
 			while (rs.next()) {
 				result.add(new Product(rs.getInt("ID"), rs.getString("name"),
-						rs.getString("SKU"), rs.getInt("cid"), rs.getFloat("price")));
+						rs.getString("SKU"), rs.getInt("cid"), rs.getInt("price")));
 			}
 
 		} catch (SQLException e) {
@@ -169,7 +169,7 @@ public class Product {
 				statement.setString(1, this.name);
 				statement.setString(2, this.SKU);
 				statement.setInt(3, this.category);
-				statement.setFloat(4, this.price);
+				statement.setInt(4, this.price);
 				statement.execute();
 			} else {
 				PreparedStatement statement = conn
@@ -180,7 +180,7 @@ public class Product {
 								+ "', cid="
 								+ new Integer(this.category).toString()
 								+ ", price="
-								+ new Float(this.price).toString()
+								+ new Integer(this.price).toString()
 								+ " WHERE \"id\"="
 								+ new Integer(this.ID).toString());
 				statement.execute();
@@ -319,7 +319,7 @@ public class Product {
 
 			while (rs.next()) {
 				return new Product(rs.getInt("id"), rs.getString("name"),
-						rs.getString("sku"), rs.getInt("cid"), rs.getFloat("price"));
+						rs.getString("sku"), rs.getInt("cid"), rs.getInt("price"));
 			}
 			return null;
 

@@ -20,19 +20,19 @@ public class Cart {
 	public Map<Integer, Integer> getCart() {
 		return cart;
 	}
-	
+
 	public Float getTotal() {
 		float total = 0;
-		
+
 		for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
-			total += entry.getValue() * Product.findProductByID(entry.getKey()).getPrice();
+			total += entry.getValue()
+					* Product.findProductByID(entry.getKey()).getPrice();
 		}
-		
+
 		return total;
 	}
-	
-	public void addToCart(Integer ID,
-			Integer quantity) {
+
+	public void addToCart(Integer ID, Integer quantity) {
 		if (cart.containsKey(ID))
 			cart.put(ID, cart.get(ID) + quantity);
 		else
@@ -49,12 +49,12 @@ public class Cart {
 			removeFromCart(ID);
 			return;
 		}
-		
+
 		if (cart.containsKey(ID))
 			cart.put(ID, quantity);
 	}
 
-	public boolean save(Integer userid) {
+	public boolean save(Integer userid, String state) {
 		// Use sessionID as the orderID
 
 		Connection conn = null;
@@ -70,29 +70,17 @@ public class Cart {
 			conn = DriverManager.getConnection(connectionString);
 			conn.setAutoCommit(false);
 			// Create the statement
-			//PreparedStatement statement = conn
-			//		.prepareStatement("INSERT INTO public.\"UserOrders\"(\"Username\",\"OrderID\",\"OrderDate\") VALUES(?,?,?);");
-			//statement.setString(1, username);
-			//statement.setString(2, sessionId);
-			// ******************************************USED JODA TIME LIBRARY
-			// FOR DATE/TIME FUNCTIONS*********************
-			// DateTime d = new DateTime();
-			// new Date().get
-			//statement.setTimestamp(3, new java.sql.Timestamp(
-			//		new java.util.Date().getTime()));
-			// statement.setDate(3, new java.sql.Date(d.getMillis()));
-			// *************************************************************************************************************
-			//statement.execute();
 
 			PreparedStatement statement1 = conn
-					.prepareStatement("INSERT INTO public.\"sales\"(\"uid\",\"pid\",\"quantity\", price) VALUES(?,?,?,?);");
+					.prepareStatement("SELECT * FROM insert_sales(?, ?, ?, ?, ?);");
 			statement1.setInt(1, userid);
+			statement1.setString(5, state);
+			
 			for (Integer key : cart.keySet()) {
 				statement1.setInt(2, key);
 				statement1.setInt(3, cart.get(key));
-				
-				float productsPrice = Product.findProductByID(key).getPrice() * cart.get(key);
-				statement1.setFloat(4, productsPrice);
+				statement1.setInt(4, Product.findProductByID(key).getPrice());
+				statement1.setInt(6, Product.findProductByID(key).getCategory());
 				statement1.execute();
 			}
 
