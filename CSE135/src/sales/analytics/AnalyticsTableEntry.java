@@ -258,7 +258,7 @@ String state, int categoryID) {
 		}else if(! "all".equals(state) && categoryID == -1){
 			queryString = "insert into product_temp select pid, sales as sales_sum from pre_products where   state='"+state+"' order by sales desc limit 10";
 		}else{
-			queryString = "insert into product_temp select pid, sales from pre_products where  cid= "+categoryID +" and state='"+state+"' order by sales desc limit 20";
+			queryString = "insert into product_temp select pid, sales from pre_products where  cid= "+categoryID +" and state='"+state+"' order by sales desc limit 10";
 		}	
 		return queryString;
 	}
