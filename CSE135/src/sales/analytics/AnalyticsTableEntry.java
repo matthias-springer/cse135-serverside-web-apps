@@ -105,6 +105,7 @@ public class AnalyticsTableEntry {
 				}
 			}
 			
+			stmt.execute("set enable_seqscan=off;");
 			rs = stmt.executeQuery(queryForCustomerProductData);
 			while (rs.next()) {
 				AnalyticsTableEntry entry = new AnalyticsTableEntry(
@@ -372,7 +373,7 @@ public class AnalyticsTableEntry {
 
 	private static String getQueryForCustomerProductData(String state,
 			int categoryID) {
-		String queryString = "select utpt.user_name, utpt.product_name, coalesce(pcp.sales,0) as sales "
+		String queryString = " select utpt.user_name, utpt.product_name, coalesce(pcp.sales,0) as sales "
 				+ " from (select ut.uid, u.name as user_name, pt.pid , p.name as product_name , ut.sales as user_sales, pt.sales as product_sales "
 				+ " from user_temp ut cross join product_temp pt "
 				+ " join users u on (u.id = ut.uid) "
@@ -442,5 +443,5 @@ public class AnalyticsTableEntry {
 		}
 		return queryString;
 	}
-
+	
 }
