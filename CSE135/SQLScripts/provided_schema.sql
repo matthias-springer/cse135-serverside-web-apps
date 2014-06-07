@@ -169,6 +169,7 @@ CREATE TABLE pre_customers_cat		-- size 10000*20*(4+4+4+50)=12MB
 	sales integer NOT NULL,
 	state text NOT NULL		-- keeping state here to avoid a join with users. Also, this table is not too big, only 10000*20 tuples (~10MB overhead)
 	-- this column could be removed in bigger scenarios
+	-- yes, we know this is redundant! but compared to the other tables, we only a tiny bit of space!
 );
 
 CREATE TABLE pre_customers			-- size 10000*(4+4+50)=0.55MB
