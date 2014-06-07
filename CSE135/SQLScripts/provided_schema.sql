@@ -153,29 +153,39 @@ INSERT INTO states (id,name,abbreviation) VALUES ('50','Wisconsin','WI');
 INSERT INTO states (id,name,abbreviation) VALUES ('51','Wyoming','WY');
 SELECT * FROM states order by id asc;
 
-CREATE TABLE pre_customers_cat
+-- Populating the precomputed tables efficiently ; using one another..
+
+
+DROP TABLE pre_customers_cat CASCADE;
+DROP TABLE pre_customers CASCADE;
+DROP TABLE pre_states CASCADE;
+DROP TABLE pre_products CASCADE;
+DROP TABLE pre_customers_products CASCADE;
+
+CREATE TABLE pre_customers_cat		-- size 10000*20*(4+4+4+50)=12MB
 (
 	uid integer NOT NULL,
 	cid integer NOT NULL,
 	sales integer NOT NULL,
-	state text NOT NULL
+	state text NOT NULL		-- keeping state here to avoid a join with users. Also, this table is not too big, only 10000*20 tuples (~10MB overhead)
+	-- this column could be removed in bigger scenarios
 );
 
-CREATE TABLE pre_customers
+CREATE TABLE pre_customers			-- size 10000*(4+4+50)=0.55MB
 (
 	uid integer NOT NULL,
 	sales integer NOT NULL,
-	state text NOT NULL
+	state text NOT NULL		-- keeping state here to avoid a join with users. Also, this table is not too big, only 10000 tuples (~0.5MB overhead)
 );
 
-CREATE TABLE pre_states
+CREATE TABLE pre_states				-- size 51*20*(50+4+4)=0.05MB
 (
 	state text NOT NULL,
 	cid integer NOT NULL,
 	sales integer NOT NULL
 );
 
-CREATE TABLE pre_products
+CREATE TABLE pre_products			-- size 10000*20*51*(4+50+4+4)=603MB
 (
 	pid integer NOT NULL,
 	state text NOT NULL,
@@ -183,12 +193,14 @@ CREATE TABLE pre_products
 	cid integer NOT NULL
 );
 
-CREATE TABLE pre_customers_products
+CREATE TABLE pre_customers_products	-- size 1000*10000*(4+4+4)=114MB
 (
 	uid integer NOT NULL,
 	pid integer NOT NULL,
 	sales integer NOT NULL
 );
+
+-- note: actual size of tables can be much smaller because we do not actually have all combinatuons of user-product etc....
 
 CREATE INDEX ON pre_customers_cat USING hash (uid);
 CREATE INDEX ON pre_customers_cat USING btree (sales);
@@ -204,7 +216,6 @@ CREATE INDEX ON pre_products USING hash (state);
 CREATE INDEX ON pre_customers_products USING hash (uid);
 CREATE INDEX ON pre_customers_products USING hash (pid);
 
--- Populating the precomputed tables efficiently ; using one another..
 
 --(uid,cid,state,sales)
 INSERT INTO pre_customers_cat(uid,state,cid,sales)
