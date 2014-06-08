@@ -381,6 +381,9 @@ public class AnalyticsTableEntry {
 				+ " ) as utpt "
 				+ " left join pre_customers_products pcp  on (pcp.uid=utpt.uid and pcp.pid= utpt.pid) "
 				+ " order by utpt.user_sales desc , utpt.product_sales desc;";
+		
+		queryString = "select user_name, product_name, sum(sales) as sales from ((select utpt.user_name as user_name, utpt.product_name as product_name, coalesce(pcp.sales,0) as sales, utpt.user_sales , utpt.product_sales  from (select ut.uid, u.name as user_name, pt.pid , p.name as product_name , ut.sales as user_sales, pt.sales as product_sales  from user_temp ut cross join product_temp pt join users u on (u.id = ut.uid) join products p on (p.id=pt.pid) ) as utpt /*left*/ join pre_customers_products pcp  on (pcp.uid=utpt.uid and pcp.pid= utpt.pid)) union (select utpt.user_name as user_name, utpt.product_name as product_name, 0 as sales , utpt.user_sales , utpt.product_sales from (select ut.uid, u.name as user_name, pt.pid , p.name as product_name , ut.sales as user_sales, pt.sales as product_sales from user_temp ut cross join product_temp pt join users u on (u.id = ut.uid) join products p on (p.id=pt.pid) ) as utpt)) as utpto group by user_name, product_name, user_sales, product_sales order by utpto.user_sales desc , utpto.product_sales desc; ";
+		
 		return queryString;
 	}
 

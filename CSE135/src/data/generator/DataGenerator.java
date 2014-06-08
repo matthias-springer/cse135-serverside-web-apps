@@ -1,5 +1,6 @@
 package data.generator;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -24,7 +25,7 @@ public class DataGenerator
 		int Num_users		=	10000;
 		int Num_categories	=	20;
 		int Num_products	=	1000;
-		int Num_sales		=	5000000;
+		int Num_sales		=	21000000;
 		DataGenerator dg=new DataGenerator();
 		dg.createData(Num_users,Num_categories,Num_products,Num_sales);
 		System.out.println("-------------finish-----------");
@@ -35,17 +36,18 @@ public class DataGenerator
 	     db.openConn();
 	     db.openStatement();
 	     db.init();//create tables
-	     ArrayList<String> a1=generateUsers(Num_users);
+	     ArrayList<String> a1=generateUsers(Num_users); 
 	     ArrayList<String> a2=generateCategories(Num_categories);
 	     ArrayList<String> a3=generateProducts(Num_categories,Num_products);
-	     ArrayList<String> a4=generateSales(Num_users,Num_products, Num_sales );
+	     
 		 db.insertAll(a1);a1.clear();
 		 System.out.println("-------------insert successfully into users table-----------");
 		 db.insertAll(a2);a2.clear();
 		 System.out.println("-------------insert successfully into categories table-----------");
 		 db.insertAll(a3);a3.clear();
 		 System.out.println("-------------insert successfully into products table-----------");
-		 db.insertAll(a4);a4.clear();
+		 ArrayList<String> a4=generateSales(Num_users,Num_products, Num_sales,db );
+		 //db.insertAll(a4);a4.clear();
 		 System.out.println("-------------insert successfully into Sales table-----------");
 		 db.closeConn();
 	}
@@ -115,7 +117,7 @@ public class DataGenerator
 		return SQLs;
 	}
 	//INSERT INTO sales table
-	public ArrayList<String> generateSales(int Num_users, int Num_products,int Num_sales )
+	public ArrayList<String> generateSales(int Num_users, int Num_products,int Num_sales, Database db)
 	{
 		ArrayList<String> SQLs=new ArrayList<String>();
 		String SQL="";
@@ -132,7 +134,13 @@ public class DataGenerator
 			quantity=r.nextInt(10)+1;
 			
 			SQL="INSERT INTO sales (uid, pid, quantity,price) VALUES("+uid+", "+pid+" , "+quantity+", "+price+");";
-			SQLs.add(SQL);
+			try {
+				db.insert(SQL);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//SQLs.add(SQL);
 		}
 		return SQLs;
 	}
